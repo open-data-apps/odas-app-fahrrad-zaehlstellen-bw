@@ -101,6 +101,50 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     .fz-table tbody tr:hover { background: #eff6ff !important; }
     .fz-table tbody td { font-size: .82rem; padding: .55rem .75rem;
       border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+    .fz-table-search-wrap {
+      padding: .7rem 1.25rem .6rem;
+      border-bottom: 1px solid #f3f4f6;
+      background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
+    }
+    .fz-table-search-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    .fz-table-search-label {
+      margin: 0;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #64748b;
+      white-space: nowrap;
+    }
+    .fz-table-search-input-wrap {
+      position: relative;
+      flex: 1 1 280px;
+      max-width: 460px;
+    }
+    .fz-table-search-input-wrap svg {
+      position: absolute;
+      left: .62rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 14px;
+      height: 14px;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+    .fz-table-search {
+      height: 32px;
+      padding-left: 1.9rem;
+      border-color: #d6deeb;
+      font-size: .82rem;
+    }
+    .fz-table-search:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 .14rem rgba(59, 130, 246, .14);
+    }
     .fz-badge-city { display: inline-block; background: #f0fdf4; color: #065f46;
       border-radius: 999px; padding: .15rem .6rem; font-size: .72rem; font-weight: 600; }
     .fz-pagination { display: flex; align-items: center;
@@ -124,6 +168,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     @media (max-width: 768px) {
       #fz-map { height: 300px; }
       .fz-table-wrap { max-height: none; overflow: visible; }
+      .fz-table-search-input-wrap { max-width: none; }
       .fz-kpi .val { font-size: 1.4rem; }
       .fz-header { padding: 1rem; }
       .fz-pagination { flex-wrap: wrap; gap: .5rem; }
@@ -252,6 +297,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
           <span>📋 Messdaten</span>
           <span class="badge" id="fz-table-info">–</span>
         </div>
+        <div class="fz-table-search-wrap">
+          <div class="fz-table-search-row">
+            <p class="fz-table-search-label">Schnellsuche in Messdaten</p>
+            <div class="fz-table-search-input-wrap">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85 1.06-1.06-3.85-3.85h.338zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+              <input type="search" id="fz-filter-search" class="form-control form-control-sm fz-table-search" placeholder="Suche nach Datum, Zählstelle, Stadt oder Zahlenwerten" aria-label="Suche in Messdaten">
+            </div>
+          </div>
+        </div>
         <div id="fz-table-wrap" class="table-responsive fz-table-wrap">
           <table class="table fz-table mb-0">
             <thead>
@@ -305,6 +359,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   let sortCol = "iso_timestamp";
   let sortDir = "desc"; // FIX: neueste Daten zuerst als Default
   let tablePage = 1;
+  let filteredRecords = [];
   let tableViewRecords = [];
   let tablePageSize = DEFAULT_TABLE_PAGE_SIZE;
   let mapFullscreenBtnEl = null;
@@ -433,6 +488,28 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       if (from && day < from) return false;
       if (to && day > to) return false;
       return true;
+    });
+  }
+
+  // ── Tabellen-Suche (nur Tabelle, nicht KPI/Chart/Karte) ────────────────
+  function applyTableSearch(records) {
+    const input = document.getElementById("fz-filter-search");
+    const query = (input?.value || "").trim().toLowerCase();
+    if (!query) return records;
+
+    return records.filter((r) => {
+      const values = [
+        formatDate(r.iso_timestamp),
+        r.counter_site || "",
+        r.domain_name || "",
+        formatNum(r.channels_all),
+        formatNum(r.channels_in),
+        formatNum(r.channels_out),
+        String(r.channels_all ?? ""),
+        String(r.channels_in ?? ""),
+        String(r.channels_out ?? ""),
+      ];
+      return values.join(" ").toLowerCase().includes(query);
     });
   }
 
@@ -668,6 +745,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   function renderTablePage() {
     const total = tableViewRecords.length;
+    const hasSearch = Boolean(
+      (document.getElementById("fz-filter-search")?.value || "").trim(),
+    );
+    const baseTotal = filteredRecords.length;
     const pages = Math.max(1, Math.ceil(total / tablePageSize));
     if (tablePage > pages) tablePage = pages;
 
@@ -685,13 +766,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     document.getElementById("fz-btn-next").disabled = tablePage >= pages;
 
     if (total === 0) {
-      document.getElementById("fz-table-info").textContent =
-        `0 von ${formatNum(totalRecords)} Einträgen`;
+      document.getElementById("fz-table-info").textContent = hasSearch
+        ? `0 Treffer (von ${formatNum(baseTotal)} gefilterten Einträgen)`
+        : `0 von ${formatNum(baseTotal)} Einträgen`;
       return;
     }
 
-    document.getElementById("fz-table-info").textContent =
-      `${formatNum(start + 1)}-${formatNum(end)} von ${formatNum(total)} geladenen Einträgen`;
+    document.getElementById("fz-table-info").textContent = hasSearch
+      ? `${formatNum(start + 1)}-${formatNum(end)} von ${formatNum(total)} Treffern`
+      : `${formatNum(start + 1)}-${formatNum(end)} von ${formatNum(total)} geladenen Einträgen`;
   }
 
   // ── KPIs berechnen ────────────────────────────────────────────────────────
@@ -1046,16 +1129,16 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     totalRecords = result.total;
     allRecords = result.records;
 
-    const filtered = applyClientFilters(allRecords);
-    tableViewRecords = sortRecords(filtered);
+    filteredRecords = applyClientFilters(allRecords);
+    tableViewRecords = sortRecords(applyTableSearch(filteredRecords));
     tablePage = 1;
 
     renderTablePage();
-    renderKPIs(tableViewRecords, totalRecords);
+    renderKPIs(filteredRecords, totalRecords);
 
     refreshSortIndicators();
-    loadChartJs(() => renderChart(tableViewRecords));
-    loadLeaflet(() => renderMap(tableViewRecords));
+    loadChartJs(() => renderChart(filteredRecords));
+    loadLeaflet(() => renderMap(filteredRecords));
   }
 
   function isMapFullscreen() {
@@ -1166,6 +1249,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     document.getElementById("fz-filter-station").value = "";
     document.getElementById("fz-filter-from").value = "";
     document.getElementById("fz-filter-to").value = "";
+    document.getElementById("fz-filter-search").value = "";
     currentOffset = 0;
     loadAndRender(0);
   });
@@ -1199,6 +1283,12 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     loadAndRender(0);
   });
 
+  document.getElementById("fz-filter-search").addEventListener("input", () => {
+    tablePage = 1;
+    tableViewRecords = sortRecords(applyTableSearch(filteredRecords));
+    renderTablePage();
+  });
+
   document
     .getElementById("fz-btn-chart-fullscreen")
     .addEventListener("click", toggleChartFullscreen);
@@ -1222,8 +1312,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         sortCol = col || "iso_timestamp";
         sortDir = col === "iso_timestamp" ? "desc" : "asc";
       }
-      const filtered = applyClientFilters(allRecords);
-      tableViewRecords = sortRecords(filtered);
+      tableViewRecords = sortRecords(applyTableSearch(filteredRecords));
       tablePage = 1;
       renderTablePage();
       refreshSortIndicators();
