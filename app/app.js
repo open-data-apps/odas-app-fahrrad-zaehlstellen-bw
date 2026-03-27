@@ -356,6 +356,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   let leafletMap = null;
   let chartInstance = null;
   let stationsLoaded = false;
+  let stationsLoading = false;
   let sortCol = "iso_timestamp";
   let sortDir = "desc"; // FIX: neueste Daten zuerst als Default
   let tablePage = 1;
@@ -669,56 +670,117 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Alle Zählstellen laden (für Dropdown) ────────────────────────────────
   async function loadAllStations() {
-    const params = new URLSearchParams({
-      resource_id: RES,
-      limit: "1000",
-      offset: "0",
-      fields: "counter_site,domain_name",
-      sort: "counter_site asc",
-    });
-    const url = `${API}?${params.toString()}`;
-    const endpoints = buildProxyEndpoints(url);
     const methods = ["POST", "GET"];
+    const stationMap = new Map();
+    let offset = 0;
+    let total = Number.POSITIVE_INFINITY;
+    let safetyCounter = 0;
 
-    for (const endpoint of endpoints) {
-      for (const method of methods) {
-        try {
-          const resp = await fetch(endpoint, { method });
-          if (!resp.ok) continue;
-          const proxyData = await resp.json();
-          const raw = Object.prototype.hasOwnProperty.call(proxyData, "content")
-            ? proxyData.content
-            : proxyData;
-          const json = typeof raw === "string" ? JSON.parse(raw) : raw;
-          if (!json.success) continue;
-          return json.result.records;
-        } catch (e) {
-          /* weiter */
+    while (offset < total && safetyCounter < 400) {
+      safetyCounter += 1;
+      const params = new URLSearchParams({
+        resource_id: RES,
+        limit: String(PAGE_STATION),
+        offset: String(offset),
+        fields: "counter_site,domain_name",
+      });
+      const url = `${API}?${params.toString()}`;
+      const endpoints = buildProxyEndpoints(url);
+
+      let batchResult = null;
+      for (const endpoint of endpoints) {
+        for (const method of methods) {
+          try {
+            const resp = await fetch(endpoint, { method });
+            if (!resp.ok) continue;
+            const proxyData = await resp.json();
+            const raw = Object.prototype.hasOwnProperty.call(
+              proxyData,
+              "content",
+            )
+              ? proxyData.content
+              : proxyData;
+            const json = typeof raw === "string" ? JSON.parse(raw) : raw;
+            if (!json.success) continue;
+            batchResult = json.result;
+            break;
+          } catch (e) {
+            /* weiter */
+          }
         }
+        if (batchResult) break;
       }
+
+      if (!batchResult) break;
+      const batchRecords = Array.isArray(batchResult.records)
+        ? batchResult.records
+        : [];
+      if (batchRecords.length === 0) break;
+
+      batchRecords.forEach((r) => {
+        const name = (r.counter_site || "").trim();
+        if (!name || stationMap.has(name)) return;
+        stationMap.set(name, r.domain_name || "");
+      });
+
+      total = Number(batchResult.total) || offset + batchRecords.length;
+      offset += batchRecords.length;
+      if (batchRecords.length < PAGE_STATION) break;
     }
-    return [];
+
+    return Array.from(stationMap.entries()).map(
+      ([counter_site, domain_name]) => ({
+        counter_site,
+        domain_name,
+      }),
+    );
   }
 
   // ── Dropdown befüllen ─────────────────────────────────────────────────────
-  async function populateStationFilter() {
-    if (stationsLoaded) return;
-    stationsLoaded = true;
-    const records = await loadAllStations();
+  function appendStationOptions(records) {
     const sel = document.getElementById("fz-filter-station");
-    const seen = new Set();
-    records
-      .map((r) => r.counter_site)
-      .filter(Boolean)
-      .sort()
-      .forEach((name) => {
-        if (seen.has(name)) return;
-        seen.add(name);
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        sel.appendChild(opt);
-      });
+    if (!sel || !Array.isArray(records) || records.length === 0) return;
+
+    const existing = new Set(
+      Array.from(sel.options)
+        .map((opt) => (opt.value || "").trim())
+        .filter(Boolean),
+    );
+
+    const names = [
+      ...new Set(
+        records.map((r) => (r.counter_site || "").trim()).filter(Boolean),
+      ),
+    ].sort((a, b) =>
+      a.localeCompare(b, "de", {
+        sensitivity: "base",
+      }),
+    );
+
+    names.forEach((name) => {
+      if (existing.has(name)) return;
+      existing.add(name);
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      sel.appendChild(opt);
+    });
+  }
+
+  async function populateStationFilter() {
+    if (stationsLoaded || stationsLoading) return;
+    stationsLoading = true;
+    try {
+      const records = await loadAllStations();
+      if (records.length > 0) {
+        appendStationOptions(records);
+        stationsLoaded = true;
+        // Sicherstellen, dass beim Initialisieren kein alter Browserwert aktiv bleibt.
+        document.getElementById("fz-filter-station").value = "";
+      }
+    } finally {
+      stationsLoading = false;
+    }
   }
 
   // ── Tabelle rendern ───────────────────────────────────────────────────────
@@ -1129,6 +1191,9 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     totalRecords = result.total;
     allRecords = result.records;
 
+    // Dropdown sofort mit bereits geladenen Datensätzen nutzbar machen.
+    appendStationOptions(allRecords);
+
     filteredRecords = applyClientFilters(allRecords);
     tableViewRecords = sortRecords(applyTableSearch(filteredRecords));
     tablePage = 1;
@@ -1320,6 +1385,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   });
 
   // ── Start ─────────────────────────────────────────────────────────────────
+  document.getElementById("fz-filter-station").value = "";
+  document.getElementById("fz-filter-from").value = "";
+  document.getElementById("fz-filter-to").value = "";
+  document.getElementById("fz-filter-search").value = "";
   populateStationFilter();
   refreshSortIndicators();
   syncChartFullscreenUi();
