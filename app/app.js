@@ -1,6 +1,6 @@
 /*
- * Fahrrad-Zählstellen BW
- * Visualisiert Eco-Counter Fahrradzähldaten aus MobiData BW.
+ * Fahrrad-Zählstellen
+ * Visualisiert Fahrradzähldaten über eine CKAN Datastore API.
  * Bootstrap 5.3 | Leaflet (dynamisch) | Chart.js (dynamisch)
  *
  * configdata: { "apiurl": "..." }
@@ -181,9 +181,9 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   enclosingHtmlDivElement.innerHTML = `
   <div class="fz-app">
     <div class="fz-header">
-      <h2>🚲 Fahrrad-Zählstellen BW</h2>
-      <p>Eco-Counter Messdaten • Baden-Württemberg • MobiData BW</p>
-      <p>Der Datensatz <a href="https://mobidata-bw.de/dataset/eco-counter-fahrradzahler" target="_blank" rel="noopener noreferrer">Eco-Counter Fahrradzähler</a> beschreibt Zeitreihen zu Fahrradfahrten an automatischen Zählstellen in Baden-Württemberg.</p>
+      <h2>🚲 Fahrrad-Zählstellen</h2>
+      <p>Eco-Counter Messdaten – interaktive Visualisierung von Fahrradzähldaten</p>
+      <p>Diese App zeigt Zeitreihen zu Fahrradfahrten an automatischen Zählstellen.</p>
     </div>
     <div class="px-3 px-md-4">
 

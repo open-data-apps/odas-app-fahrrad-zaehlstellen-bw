@@ -2,17 +2,17 @@
   "app-entwickler-id": "12343",
   "app-entwickler-name": "ondics-gmbh",
   "name-in-url": "fahrrad-zaehlstellen-bw",
-  "name": "Fahrrad-Zaehlstellen BW",
+  "name": "Fahrrad-Zählstellen",
   "version": "1.1.0",
   "odas-app-icon": "assets/odas-app-icon.svg",
   "app-icon": "assets/odas-app-icon.svg",
   "kurzbeschreibung": "Interaktive Visualisierung von Eco-Counter Fahrradzahldaten mit KPIs, Karte, skalierbarem Chart und komfortabler Tabelle.",
   "beschreibung": [
     "_multiline_",
-    "Diese App visualisiert Fahrradzahldaten aus Baden-Wurttemberg auf Basis der CKAN Datastore API.",
+    "Diese App visualisiert Fahrradzähldaten auf Basis der CKAN Datastore API.",
     "Dargestellt werden KPIs, eine Leaflet-Karte mit Vollbildfunktion, ein Zeitreihen-Chart mit Vollbild sowie eine sortier- und paginierbare Messwerttabelle.",
-    "Die App unterstuetzt frei waehlbare Lade-Limits inklusive 'Alle', zeigt Ladefortschritt und erlaubt das Abbrechen laufender Ladeprozesse.",
-    "Die Daten werden ueber den ODAS-Proxy geladen und robust in Batches verarbeitet.",
+    "Die App unterstützt frei wählbare Lade-Limits inklusive 'Alle', zeigt Ladefortschritt und erlaubt das Abbrechen laufender Ladeprozesse.",
+    "Die Daten werden über den ODAS-Proxy geladen und robust in Batches verarbeitet.",
     ""
   ],
   "tags-funktion": [
@@ -23,7 +23,7 @@
     "Filterung"
   ],
   "tags-dateityp": ["json"],
-  "tags-datenart": ["Mobilitat", "Fahrradverkehr"],
+  "tags-datenart": ["Mobilität", "Fahrradverkehr"],
   "screenshots": [
     "assets/Desktop_Screenshot_1.png",
     "assets/Desktop_Screenshot_2.png",
@@ -41,7 +41,7 @@
     "seitentitel": {
       "label": "Seitentitel",
       "hilfe": "Der Seitentitel wird im Browser-Tab der App angezeigt",
-      "default": "Fahrrad-Zaehlstellen BW",
+      "default": "Fahrrad-Zählstellen",
       "format": {
         "typ": "string",
         "laenge": 50
@@ -61,7 +61,7 @@
     "titel": {
       "label": "Titel",
       "hilfe": "Der Titel wird in der Titelzeile der App angezeigt",
-      "default": "Fahrrad-Zaehlstellen BW",
+      "default": "Fahrrad-Zählstellen",
       "format": {
         "typ": "string",
         "laenge": 50
@@ -103,9 +103,9 @@
       },
       "default": [
         "_multiline_",
-        "Diese App zeigt Fahrradzahldaten aus Baden-Wurttemberg als interaktive Analyseansicht.",
+        "Diese App zeigt Fahrradzähldaten als interaktive Analyseansicht.",
         "Die Ansicht umfasst Kennzahlen, Karten- und Chart-Vollbild, flexible Ladegrenzen, Filterung sowie eine sortier- und paginierbare Messwerttabelle.",
-        "Die Datenquelle wird ueber die Instanz-Parameter apiurl und resourceid konfiguriert.",
+        "Die Datenquelle wird über die Instanz-Parameter apiurl und resourceid konfiguriert.",
         "## App-Anbieter",
         "Die App wird bereit gestellt von <a href=\"{{odp.anbieter.url}}\">{{odp.anbieter.name}}</a>",
         "## Datenquelle",
@@ -180,7 +180,7 @@
     },
     "apiurl": {
       "label": "URL zu den Daten",
-      "hilfe": "Basis-URL der CKAN Datastore API (wird uber Proxy aufgerufen)",
+      "hilfe": "Basis-URL der CKAN Datastore API (wird über Proxy aufgerufen)",
       "format": {
         "typ": "url",
         "laenge": 255

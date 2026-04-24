@@ -1,6 +1,6 @@
-# Fahrrad-Zaehlstellen BW - App fuer den Open Data App-Store (ODAS)
+# Fahrrad-Zählstellen – App für den Open Data App-Store (ODAS)
 
-Interaktive Visualisierung von Eco-Counter Fahrradzaehldaten fuer den [Open Data App Store](https://open-data-app-store.de/).
+Interaktive Visualisierung von Fahrrad-Zähldaten für den [Open Data App Store](https://open-data-app-store.de/).
 Die App entspricht der [Open Data App-Spezifikation](https://open-data-apps.github.io/open-data-app-docs/open-data-app-spezifikation/).
 
 ---
@@ -15,36 +15,36 @@ Die App entspricht der [Open Data App-Spezifikation](https://open-data-apps.gith
 
 Single Page Application mit Fokus auf performanter Analyse und einfacher Bedienung:
 
-- **Kennzahlen (KPIs)**: Fahrten gesamt, aktivste Zaehlstelle, Durchschnitt je Messung, Datensaetze gesamt
-- **Filterung**: nach Zaehlstelle und Zeitraum (von/bis), auch nur mit Zaehlstelle nutzbar
-- **Ladesteuerung**: Auswahl der zu ladenden Datensaetze (100 bis 10000 oder `Alle`), Fortschrittsanzeige und Abbrechen-Button
-- **Kartenansicht**: Leaflet-Karte mit aggregierten Zaehlstellenpunkten, Popups und Vollbild-Button als Karten-Control
-- **Fahrten-Verlauf**: Chart.js-Zeitreihe mit Vollbildmodus, adaptiver Aggregation (Tag/Woche/Monat), Serienbuendelung fuer grosse Datenmengen und Decimation
-- **Messdaten-Tabelle**: Sortierung auf allen relevanten Spalten, clientseitige Pagination ohne Neuladen von Karte/Chart, Eintraege-pro-Seite-Auswahl (10/25/50/100)
-- **Robuster Datenabruf**: CKAN-Requests ueber ODAS-Proxy mit Fallback-Strategie und Batch-Ladevorgaengen
+- **Kennzahlen (KPIs)**: Fahrten gesamt, aktivste Zählstelle, Durchschnitt je Messung, Datensätze gesamt
+- **Filterung**: nach Zählstelle und Zeitraum (von/bis), auch nur mit Zählstelle nutzbar
+- **Ladesteuerung**: Auswahl der zu ladenden Datensätze (100 bis 10000 oder `Alle`), Fortschrittsanzeige und Abbrechen-Button
+- **Kartenansicht**: Leaflet-Karte mit aggregierten Zählstellenpunkten, Popups und Vollbild-Button als Karten-Control
+- **Fahrten-Verlauf**: Chart.js-Zeitreihe mit Vollbildmodus, adaptiver Aggregation (Tag/Woche/Monat), Serienbündelung für große Datenmengen und Decimation
+- **Messdaten-Tabelle**: Sortierung auf allen relevanten Spalten, clientseitige Pagination ohne Neuladen von Karte/Chart, Einträge-pro-Seite-Auswahl (10/25/50/100)
+- **Robuster Datenabruf**: CKAN-Requests über ODAS-Proxy mit Fallback-Strategie und Batch-Ladevorgängen
 
 ---
 
 ## Datenformat
 
-Unterstuetzt **CKAN Datastore JSON** (Endpoint `datastore_search`) mit `result.total` und `result.records`.
+Unterstützt **CKAN Datastore JSON** (Endpoint `datastore_search`) mit `result.total` und `result.records`.
 
 ---
 
-## Kompatible Datensaetze
+## Kompatible Datensätze
 
-Datensaetze mit folgenden Kernfeldern (Feldnamen koennen im Quellsystem variieren, die App erwartet diese Inhalte):
+Datensätze mit folgenden Kernfeldern (Feldnamen können im Quellsystem variieren, die App erwartet diese Inhalte):
 
 | Feld            | Beschreibung                    |
 | --------------- | ------------------------------- |
 | `iso_timestamp` | Zeitstempel der Messung         |
-| `counter_site`  | Name der Zaehlstelle            |
+| `counter_site`  | Name der Zählstelle             |
 | `domain_name`   | Stadt/Kommune                   |
 | `channels_all`  | Gesamtzahl Fahrten je Messpunkt |
-| `channels_in`   | Fahrten Einwaerts               |
-| `channels_out`  | Fahrten Auswaerts               |
-| `latitude`      | Breitengrad der Zaehlstelle     |
-| `longitude`     | Laengengrad der Zaehlstelle     |
+| `channels_in`   | Fahrten einwärts                |
+| `channels_out`  | Fahrten auswärts                |
+| `latitude`      | Breitengrad der Zählstelle      |
+| `longitude`     | Längengrad der Zählstelle       |
 
 ---
 
@@ -56,7 +56,7 @@ Datensaetze mit folgenden Kernfeldern (Feldnamen koennen im Quellsystem variiere
 make build up
 ```
 
-App laeuft auf http://localhost:8089 (Konfiguration wird lokal geladen).
+App läuft auf http://localhost:8089 (Konfiguration wird lokal geladen).
 
 ### Wichtige Dateien
 
@@ -64,8 +64,8 @@ App laeuft auf http://localhost:8089 (Konfiguration wird lokal geladen).
 | -------------------------- | ------------------------------------------------------------------------ |
 | `app/app.js`               | Hauptlogik: Datenabruf, Filterung, KPIs, Tabelle, Chart, Karte, Vollbild |
 | `app/index.html`           | Einstiegspunkt der App im ODAS-Container                                 |
-| `app-package.json`         | App-Metadaten und Instanz-Konfigurationsparameter fuer ODAS              |
-| `odas-config/config.json`  | Lokale Konfiguration fuer die Entwicklung                                |
+| `app-package.json`         | App-Metadaten und Instanz-Konfigurationsparameter für ODAS               |
+| `odas-config/config.json`  | Lokale Konfiguration für die Entwicklung                                 |
 | `assets/odas-app-icon.svg` | App-Icon                                                                 |
 | `CHANGELOG.md`             | Versionshistorie                                                         |
 
@@ -81,12 +81,12 @@ App laeuft auf http://localhost:8089 (Konfiguration wird lokal geladen).
 | `titel`        | Titel innerhalb der App                                             | ja      |
 | `seitentitel`  | Browser-Tab-Titel                                                   | ja      |
 | `icon`         | Logo/Icon in der Kopfzeile                                          | ja      |
-| `beschreibung` | Inhalt fuer den Menuepunkt "Ueber diese App"                        | ja      |
-| `kontakt`      | Kontakttext fuer den Menuepunkt "Kontakt"                           | ja      |
+| `beschreibung` | Inhalt für den Menüpunkt „Über diese App"                           | ja      |
+| `kontakt`      | Kontakttext für den Menüpunkt „Kontakt"                             | ja      |
 | `impressum`    | Impressumstext                                                      | ja      |
 | `datenschutz`  | Datenschutztext                                                     | ja      |
 | `fusszeile`    | Footer-Text                                                         | ja      |
-| `lizenz`       | Lizenzangabe fuer die App                                           | ja      |
+| `lizenz`       | Lizenzangabe für die App                                            | ja      |
 | `sprache`      | Sprache der App (aktuell `de`)                                      | ja      |
 
 ---
