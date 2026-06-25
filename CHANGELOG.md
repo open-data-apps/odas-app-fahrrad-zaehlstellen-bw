@@ -2,6 +2,20 @@
 
 Alle nennenswerten Aenderungen dieser App werden in dieser Datei dokumentiert.
 
+## [1.2.0] - 2026-03-28
+
+### Added
+
+- **Schale 4 – Verständlichkeitskomponenten**: KPI-Kontexttexte (einer pro KPI-Kachel, konfigurierbar), Datenfrische-Anzeige (basierend auf jüngstem Messwert), ausklappbare Methodikbox (Herkunft, Erhebungsmethode, Limitierungen) und Abschnitt „Datenquelle & weiterführende Links" mit automatisch abgeleiteten Quell-Links (Open-Data-Portal, Datensatz, Ressource) plus optionalem Zusatzlink-Bereich.
+- **Zählstellen-Dropdown mit Ortsangabe**: Filter-Dropdown zeigt zusätzlich zum Namen der Zählstelle (`counter_site`) den Ort (`domain_name`) an — z.B. `Zählstelle A – Stuttgart`. Die Filterung arbeitet weiterhin mit dem `counter_site`-Wert.
+
+### Changed
+
+- **Beschreibungsseite**: Text ist MobiData-spezifisch: Datensatz-Link verweist korrekt auf die Datensatzseite (statt auf die rohe API-URL), Open-Data-Portal-Link nutzt `{{odp.url}}`, Zielgruppen-Paragraph beschreibt Bürger:innen, Kommunen und Radverkehrsplanung.
+- **Impressum**: Um TMG-/MStV-Pflichtangaben erweitert (Vertretungsberechtigte, Registereintrag, USt-IdNr., Verantwortlicher nach § 18 Abs. 2 MStV, Haftungshinweise, Urheberrecht). ODAS-Platzhalter bleiben erhalten.
+- **Neue Config-Keys**: `kpiKontext1`–`kpiKontext4`, `datenquelleHinweis`, `datenStand`, `weiterfuehrendeLinks` — alle optional, leer = ausgeblendet.
+- **Link-Ableitung**: Portal, Datensatz und Ressource werden aus `urlDaten`/`apiurl`/`resourceid` abgeleitet (kein neuer Config-Key nötig).
+
 ## [1.1.0] - 2026-03-27
 
 ### Added

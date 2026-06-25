@@ -24,7 +24,7 @@
   ],
   "datenschutz": "umfangreicher Text...",
   "urlODP": "https://open-data-musterstadt.ckan.de",
-  "urlDaten": "https://open-data-musterstadt.ckan.de/testdaten",
+  "urlDaten": "https://mobidata-bw.de/dataset/eco-counter-fahrradzahler",
   "fusszeile": [
     "(C) Copyright 2026 | ",
     "für den Inhalt: Ondics GmbH | ",
@@ -33,5 +33,12 @@
   ],
   "apiurl": "https://mobidata-bw.de/api/3/action/datastore_search",
   "resourceid": "bbb274af-580d-4228-851e-c8daf32d3c6e",
-  "sprache": "de"
+  "kpiKontext1": "Summe aller geladenen Messwerte – abhängig von Filter und Ladegrenze.",
+"kpiKontext2": "Zählstelle mit den meisten erfassten Fahrten im geladenen Zeitraum.",
+"kpiKontext3": "Durchschnittliche Fahrten pro Messzeitpunkt über alle geladenen Zählstellen.",
+"kpiKontext4": "Gesamtzahl der im Datensatz verfügbaren Messungen (serverseitig gemeldet).",
+"datenquelleHinweis": "Die Daten stammen aus automatischen Eco-Counter-Dauerzählstellen und werden über MobiData BW bereitgestellt. Einzelne Zeiträume können durch Wartung oder Ausfälle lückenhaft sein.",
+"datenStand": "Stand: 2025",
+"weiterfuehrendeLinks": "<a href='https://mobidata-bw.de' target='_blank'>MobiData BW Startseite</a>",
+"sprache": "de"
 }

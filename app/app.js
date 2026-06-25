@@ -177,6 +177,19 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     document.head.appendChild(styleEl);
   }
 
+  const kk = (n) => {
+    const t = String(configdata["kpiKontext" + n] || "").trim();
+    if (!t) return "";
+    return (
+      '<button class="fz-kpi-info-toggle collapsed" type="button" data-bs-toggle="collapse" ' +
+      'data-bs-target="#fz-kpi-kontext-' + n + '" aria-expanded="false" ' +
+      'aria-controls="fz-kpi-kontext-' + n + '" aria-label="Erklärung zu diesem Wert">' +
+      '<span class="fz-kpi-info-icon" aria-hidden="true">ⓘ</span></button>' +
+      '<div id="fz-kpi-kontext-' + n + '" class="collapse">' +
+      '<div class="fz-kpi-kontext">' + escapeHtml(t) + "</div></div>"
+    );
+  };
+
   // ── HTML ──────────────────────────────────────────────────────────────────
   enclosingHtmlDivElement.innerHTML = `
   <div class="fz-app">
@@ -186,6 +199,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       <p>Diese App zeigt Zeitreihen zu Fahrradfahrten an automatischen Zählstellen.</p>
     </div>
     <div class="px-3 px-md-4">
+      <div id="fz-datenfrische" class="text-muted small text-end mb-2"></div>
 
       <!-- KPIs -->
       <div class="row g-3 mb-4">
@@ -194,6 +208,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
             <div class="val" id="kpi-total">–</div>
             <div class="lbl">Fahrten gesamt</div>
             <div class="sub" id="kpi-total-sub">geladene Messungen</div>
+            ${kk(1)}
           </div>
         </div>
         <div class="col-6 col-md-3">
@@ -201,6 +216,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
             <div class="val green" id="kpi-top">–</div>
             <div class="lbl">Aktivste Zählstelle</div>
             <div class="sub" id="kpi-top-sub">&nbsp;</div>
+            ${kk(2)}
           </div>
         </div>
         <div class="col-6 col-md-3">
@@ -208,6 +224,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
             <div class="val orange" id="kpi-avg">–</div>
             <div class="lbl">Ø Fahrten / Messung</div>
             <div class="sub" id="kpi-avg-sub">&nbsp;</div>
+            ${kk(3)}
           </div>
         </div>
         <div class="col-6 col-md-3">
@@ -215,6 +232,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
             <div class="val purple" id="kpi-total-records">–</div>
             <div class="lbl">Datensätze gesamt</div>
             <div class="sub" id="kpi-stations-sub">&nbsp;</div>
+            ${kk(4)}
           </div>
         </div>
       </div>
@@ -346,6 +364,9 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         </div>
       </div>
 
+      <div id="fz-methodik"></div>
+      <div id="fz-weitere-infos"></div>
+
     </div>
   </div>`;
 
@@ -383,6 +404,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     } catch (e) {
       return ts.substring(0, 10);
     }
+  }
+
+  function escapeHtml(str) {
+    return String(str == null ? "" : str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   function setLoadStatus(text, isError = false) {
@@ -747,22 +777,25 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         .filter(Boolean),
     );
 
+    const cityByName = new Map();
+    records.forEach((r) => {
+      const name = (r.counter_site || "").trim();
+      if (!name) return;
+      const city = (r.domain_name || "").trim();
+      if (city && !cityByName.get(name)) cityByName.set(name, city);
+    });
+
     const names = [
-      ...new Set(
-        records.map((r) => (r.counter_site || "").trim()).filter(Boolean),
-      ),
-    ].sort((a, b) =>
-      a.localeCompare(b, "de", {
-        sensitivity: "base",
-      }),
-    );
+      ...new Set(records.map((r) => (r.counter_site || "").trim()).filter(Boolean)),
+    ].sort((a, b) => a.localeCompare(b, "de", { sensitivity: "base" }));
 
     names.forEach((name) => {
       if (existing.has(name)) return;
       existing.add(name);
+      const city = cityByName.get(name);
       const opt = document.createElement("option");
       opt.value = name;
-      opt.textContent = name;
+      opt.textContent = city ? `${name} – ${city}` : name;
       sel.appendChild(opt);
     });
   }
@@ -869,6 +902,91 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       `über ${stationCount} Zählstelle(n)`;
     document.getElementById("kpi-total-records").textContent = formatNum(total);
     document.getElementById("kpi-stations-sub").textContent = "im Datensatz";
+  }
+
+
+
+  function renderDatenfrische(records) {
+    const el = document.getElementById("fz-datenfrische");
+    if (!el) return;
+    let newest = null;
+    (records || []).forEach((r) => {
+      const ts = r.iso_timestamp;
+      if (ts && (!newest || ts > newest)) newest = ts;
+    });
+    el.innerHTML = newest ? "Daten aktuell bis: " + escapeHtml(formatDate(newest)) : "";
+  }
+
+  function renderMethodik(configdata) {
+    const wrap = document.getElementById("fz-methodik");
+    if (!wrap) return;
+    const hinweis = (configdata.datenquelleHinweis || "").trim();
+    const stand = (configdata.datenStand || "").trim();
+    if (!hinweis && !stand) {
+      wrap.innerHTML = "";
+      return;
+    }
+    const standZeile = stand
+      ? '<p class="text-muted small mb-2">' + escapeHtml(stand) + "</p>"
+      : "";
+    wrap.innerHTML =
+      '<div class="accordion mb-4" id="fz-methodik-acc">' +
+      '<div class="accordion-item">' +
+      '<h2 class="accordion-header">' +
+      '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" ' +
+      'data-bs-target="#fz-methodik-body" aria-expanded="false" aria-controls="fz-methodik-body">' +
+      "Methodik &amp; Datenquelle</button></h2>" +
+      '<div id="fz-methodik-body" class="accordion-collapse collapse" data-bs-parent="#fz-methodik-acc">' +
+      '<div class="accordion-body">' +
+      standZeile +
+      hinweis +
+      "</div></div></div></div>";
+  }
+
+  function buildSourceLinks(configdata) {
+    const links = [];
+    const datensatz = (configdata.urlDaten || "").trim();
+    const apiurl = (configdata.apiurl || "").trim();
+    const resourceid = (configdata.resourceid || "").trim();
+
+    let portal = "";
+    try {
+      portal = new URL(datensatz || apiurl).origin;
+    } catch (e) {
+      portal = "";
+    }
+
+    if (portal) links.push(["Open-Data-Portal", portal]);
+    if (datensatz) links.push(["Datensatz", datensatz]);
+    if (datensatz && resourceid) {
+      links.push(["Ressource", datensatz.replace(/\/$/, "") + "/resource/" + resourceid]);
+    }
+    return links;
+  }
+
+  function renderWeitereInfos(configdata) {
+    const wrap = document.getElementById("fz-weitere-infos");
+    if (!wrap) return;
+    const sourceLinks = buildSourceLinks(configdata);
+    const extra = (configdata.weiterfuehrendeLinks || "").trim();
+    if (sourceLinks.length === 0 && !extra) {
+      wrap.innerHTML = "";
+      return;
+    }
+    const linkItems = sourceLinks
+      .map(
+        ([label, url]) =>
+          '<li><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' +
+          escapeHtml(label) + "</a></li>",
+      )
+      .join("");
+    wrap.innerHTML =
+      '<div class="fz-card mb-4">' +
+      '<div class="fz-card-header"><span>🔗 Datenquelle &amp; weiterführende Links</span></div>' +
+      '<div class="p-3">' +
+      (linkItems ? '<ul class="mb-' + (extra ? "3" : "0") + '">' + linkItems + "</ul>" : "") +
+      (extra ? "<div>" + extra + "</div>" : "") +
+      "</div></div>";
   }
 
   // ── Chart rendern ─────────────────────────────────────────────────────────
@@ -1191,6 +1309,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     totalRecords = result.total;
     allRecords = result.records;
 
+    renderDatenfrische(allRecords);
+
     // Dropdown sofort mit bereits geladenen Datensätzen nutzbar machen.
     appendStationOptions(allRecords);
 
@@ -1390,6 +1510,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   document.getElementById("fz-filter-to").value = "";
   document.getElementById("fz-filter-search").value = "";
   populateStationFilter();
+  renderMethodik(configdata);
+  renderWeitereInfos(configdata);
   refreshSortIndicators();
   syncChartFullscreenUi();
   loadAndRender(0);

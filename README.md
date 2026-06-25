@@ -15,12 +15,13 @@ Die App entspricht der [Open Data App-Spezifikation](https://open-data-apps.gith
 
 Single Page Application mit Fokus auf performanter Analyse und einfacher Bedienung:
 
-- **Kennzahlen (KPIs)**: Fahrten gesamt, aktivste Zählstelle, Durchschnitt je Messung, Datensätze gesamt
-- **Filterung**: nach Zählstelle und Zeitraum (von/bis), auch nur mit Zählstelle nutzbar
+- **Kennzahlen (KPIs)**: Fahrten gesamt, aktivste Zählstelle, Durchschnitt je Messung, Datensätze gesamt — mit konfigurierbaren Kontexttexten für bessere Verständlichkeit
+- **Filterung**: nach Zählstelle (mit Ortsangabe) und Zeitraum (von/bis), auch nur mit Zählstelle nutzbar
 - **Ladesteuerung**: Auswahl der zu ladenden Datensätze (100 bis 10000 oder `Alle`), Fortschrittsanzeige und Abbrechen-Button
 - **Kartenansicht**: Leaflet-Karte mit aggregierten Zählstellenpunkten, Popups und Vollbild-Button als Karten-Control
 - **Fahrten-Verlauf**: Chart.js-Zeitreihe mit Vollbildmodus, adaptiver Aggregation (Tag/Woche/Monat), Serienbündelung für große Datenmengen und Decimation
 - **Messdaten-Tabelle**: Sortierung auf allen relevanten Spalten, clientseitige Pagination ohne Neuladen von Karte/Chart, Einträge-pro-Seite-Auswahl (10/25/50/100)
+- **Schale 4 – Verständlichkeit**: Datenfrische-Anzeige (basierend auf neuestem Messwert), ausklappbare Methodikbox mit Datenquellen-Hinweis, automatisch abgeleitete Quell-Links (Portal/Datensatz/Ressource), optionaler Zusatz-Link-Bereich
 - **Robuster Datenabruf**: CKAN-Requests über ODAS-Proxy mit Fallback-Strategie und Batch-Ladevorgängen
 
 ---
@@ -73,12 +74,16 @@ App läuft auf http://localhost:8089 (Konfiguration wird lokal geladen).
 
 ## Konfiguration (Instanz)
 
-| Parameter      | Beschreibung                                                        | Pflicht |
-| -------------- | ------------------------------------------------------------------- | ------- |
-| `apiurl`       | Basis-URL zur CKAN Datastore API (`/api/3/action/datastore_search`) | ja      |
-| `resourceid`   | Resource-ID des Datensatzes                                         | ja      |
-| `urlDaten`     | URL zur Datensatzseite im Open Data Portal                          | ja      |
-| `titel`        | Titel innerhalb der App                                             | ja      |
+| Parameter                | Beschreibung                                                        | Pflicht |
+| ------------------------ | ------------------------------------------------------------------- | ------- |
+| `apiurl`                 | Basis-URL zur CKAN Datastore API (`/api/3/action/datastore_search`) | ja      |
+| `resourceid`             | Resource-ID des Datensatzes                                         | ja      |
+| `urlDaten`               | URL zur Datensatzseite im Open Data Portal                          | ja      |
+| `kpiKontext1`–`kpiKontext4` | Optionale Erklärtexte unter den vier KPI-Kacheln                | nein    |
+| `datenquelleHinweis`     | Methodik-/Datenquelle-Hinweis (Markdown/HTML, ausklappbar)          | nein    |
+| `datenStand`             | Freitext-Datenstand, z.B. "Stand: Januar 2025"                      | nein    |
+| `weiterfuehrendeLinks`   | Zusätzliche Links zu verwandten Datensätzen (Markdown/HTML)         | nein    |
+| `titel`                  | Titel innerhalb der App                                             | ja      |
 | `seitentitel`  | Browser-Tab-Titel                                                   | ja      |
 | `icon`         | Logo/Icon in der Kopfzeile                                          | ja      |
 | `beschreibung` | Inhalt für den Menüpunkt „Über diese App"                           | ja      |
