@@ -6,6 +6,84 @@
  * configdata: { "apiurl": "..." }
  */
 
+function isOdasProxyEnabled(configdata = {}) {
+  return String(configdata.proxyAktiv || "").trim().toLowerCase() === "ja";
+}
+
+function extractPathFromUrl(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return parsedUrl.pathname + parsedUrl.search;
+  } catch (_error) {
+    return String(url || "");
+  }
+}
+
+function getOdasAppBasePath(pathname) {
+  let appPath =
+    pathname === undefined
+      ? typeof window !== "undefined"
+        ? window.location.pathname
+        : "/"
+      : String(pathname || "/");
+
+  if (!appPath.endsWith("/")) {
+    const lastSlashIndex = appPath.lastIndexOf("/");
+    const lastSegment = appPath.substring(lastSlashIndex + 1);
+    if (lastSegment.includes(".")) {
+      appPath = appPath.substring(0, lastSlashIndex + 1);
+    }
+  }
+
+  return appPath.replace(/\/+$/, "");
+}
+
+function getOdasProxyEndpoint(targetUrl, pathname) {
+  const appPath = getOdasAppBasePath(pathname);
+  return `${appPath}/odp-data?path=${encodeURIComponent(
+    extractPathFromUrl(targetUrl),
+  )}`;
+}
+
+async function fetchViaOdasProxy(targetUrl) {
+  const response = await fetch(getOdasProxyEndpoint(targetUrl), {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    throw new Error(`ODAS-Proxy-Fehler: HTTP ${response.status}`);
+  }
+
+  const proxyData = await response.json();
+  if (!proxyData || typeof proxyData.content !== "string") {
+    throw new Error("ODAS-Proxy-Antwort enthält keinen content-String.");
+  }
+
+  return proxyData.content;
+}
+
+async function fetchOdasResource(targetUrl, configdata = {}) {
+  if (isOdasProxyEnabled(configdata)) {
+    return fetchViaOdasProxy(targetUrl);
+  }
+
+  try {
+    const response = await fetch(targetUrl);
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    return response.text();
+  } catch (error) {
+    throw new Error(
+      `Direkter Datenabruf fehlgeschlagen (${error.message}). Bitte prüfen Sie die Daten-URL und die CORS-Freigabe der Datenquelle.`,
+    );
+  }
+}
+
+async function fetchOdasJson(targetUrl, configdata = {}) {
+  return JSON.parse(await fetchOdasResource(targetUrl, configdata));
+}
+
 function app(configdata = {}, enclosingHtmlDivElement) {
   const API =
     configdata.apiurl || "https://mobidata-bw.de/api/3/action/datastore_search";
@@ -544,51 +622,22 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     });
   }
 
-  // ── Proxy-Pfade (ODAS-Framework) ──────────────────────────────────────────
-  function buildProxyEndpoints(targetUrl) {
-    const basePath = window.location.pathname.replace(/\/$/, "");
-    return [
-      ...new Set([
-        `${basePath}/odp-data?path=${encodeURIComponent(targetUrl)}`,
-        `${basePath}/odp-data?path=${targetUrl}`,
-      ]),
-    ];
-  }
-
+  // ── Datenabruf: direkt oder ueber den ODAS-Proxy (proxyAktiv) ─────────────
   async function fetchBatch(offset, limit, signal) {
     const url = buildUrl(offset, limit);
-    const endpoints = buildProxyEndpoints(url);
-    const methods = ["POST", "GET"];
-    const errors = [];
 
-    for (const endpoint of endpoints) {
-      for (const method of methods) {
-        try {
-          const resp = await fetch(endpoint, { method, signal });
-          if (!resp.ok) {
-            errors.push(`${method} – HTTP ${resp.status}`);
-            continue;
-          }
-          const proxyData = await resp.json();
-          const raw = Object.prototype.hasOwnProperty.call(proxyData, "content")
-            ? proxyData.content
-            : proxyData;
-          const json = typeof raw === "string" ? JSON.parse(raw) : raw;
-          if (!json.success) {
-            errors.push(`${method} – API-Fehler`);
-            continue;
-          }
-          return { result: json.result, errors: [] };
-        } catch (e) {
-          if (e && e.name === "AbortError") {
-            return { result: null, errors: [], aborted: true };
-          }
-          errors.push(`${method} – ${e.message}`);
-        }
+    try {
+      const json = await fetchOdasJson(url, configdata);
+      if (!json.success) {
+        return { result: null, errors: ["API-Fehler"], aborted: false };
       }
+      return { result: json.result, errors: [] };
+    } catch (e) {
+      if (e && e.name === "AbortError") {
+        return { result: null, errors: [], aborted: true };
+      }
+      return { result: null, errors: [e.message], aborted: false };
     }
-
-    return { result: null, errors, aborted: false };
   }
 
   // ── Daten laden ───────────────────────────────────────────────────────────
@@ -700,7 +749,6 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Alle Zählstellen laden (für Dropdown) ────────────────────────────────
   async function loadAllStations() {
-    const methods = ["POST", "GET"];
     const stationMap = new Map();
     let offset = 0;
     let total = Number.POSITIVE_INFINITY;
@@ -715,30 +763,12 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         fields: "counter_site,domain_name",
       });
       const url = `${API}?${params.toString()}`;
-      const endpoints = buildProxyEndpoints(url);
-
       let batchResult = null;
-      for (const endpoint of endpoints) {
-        for (const method of methods) {
-          try {
-            const resp = await fetch(endpoint, { method });
-            if (!resp.ok) continue;
-            const proxyData = await resp.json();
-            const raw = Object.prototype.hasOwnProperty.call(
-              proxyData,
-              "content",
-            )
-              ? proxyData.content
-              : proxyData;
-            const json = typeof raw === "string" ? JSON.parse(raw) : raw;
-            if (!json.success) continue;
-            batchResult = json.result;
-            break;
-          } catch (e) {
-            /* weiter */
-          }
-        }
-        if (batchResult) break;
+      try {
+        const json = await fetchOdasJson(url, configdata);
+        if (json.success) batchResult = json.result;
+      } catch (e) {
+        /* weiter */
       }
 
       if (!batchResult) break;
