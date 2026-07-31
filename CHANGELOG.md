@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.0 - 2026-07-31
+- CHG: Platzhalter-Titel in der lokalen Konfiguration durch den echten App-Titel ersetzt
+
 Alle nennenswerten Aenderungen dieser App werden in dieser Datei dokumentiert.
 
 ## 1.6.0 - 2026-07-31
