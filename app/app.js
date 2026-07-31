@@ -88,9 +88,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   const API =
     configdata.apiurl || "https://mobidata-bw.de/api/3/action/datastore_search";
   const RES =
-    configdata.resourceid ||
-    configdata.resourceId ||
-    "bbb274af-580d-4228-851e-c8daf32d3c6e";
+    configdata.resourceid || "bbb274af-580d-4228-851e-c8daf32d3c6e";
   const PAGE = 1000;
   const PAGE_STATION = 10000;
   const DEFAULT_TABLE_PAGE_SIZE = 10;
