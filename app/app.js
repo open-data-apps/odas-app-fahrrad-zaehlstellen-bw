@@ -1431,7 +1431,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       return;
     }
     const s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js";
+    s.src = "vendor/chartjs/chart.umd.min.js";
     s.onload = cb;
     document.head.appendChild(s);
   }
@@ -1443,10 +1443,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     }
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+    link.href = "vendor/leaflet/leaflet.css";
     document.head.appendChild(link);
     const s = document.createElement("script");
-    s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    s.src = "vendor/leaflet/leaflet.js";
     s.onload = cb;
     document.head.appendChild(s);
   }
