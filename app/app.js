@@ -1431,7 +1431,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       return;
     }
     const s = document.createElement("script");
-    s.src = "https://cdn.jsdelivr.net/npm/chart.js";
+    s.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js";
     s.onload = cb;
     document.head.appendChild(s);
   }
