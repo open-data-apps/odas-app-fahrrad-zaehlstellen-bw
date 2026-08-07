@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.17.0 - 2026-08-08
+- CHG: Bootstrap-Ziele instanzeindeutig (F-32): KPI-Kontext- und Methodik-Accordion-Ziele (`#fz-kpi-kontext-<n>`, `#fz-methodik-acc`/`#fz-methodik-body`) um eine Instanzkennung ergänzt und die Leaflet-Karte containergebunden initialisiert (`L.map(root.querySelector("#fz-map"))` statt `L.map("fz-map")`; die div-ID `fz-map` bleibt unverändert) — mehrere Instanzen derselben App auf einer Seite klappen ihre Panels unabhängig auf, und jede Karte wird im eigenen Container initialisiert
+
 ## 1.16.0 - 2026-08-07
 - CHG: DOM-Zugriffe auf den App-Container gescopt (F-25, Tranche 4): alle Elemente der App werden über den App-Container (root.querySelector) angesprochen statt über document; unpräfixierte IDs mit `fz-`-Präfix versehen (`kpi-total` → `fz-kpi-total`, `kpi-total-sub` → `fz-kpi-total-sub`, `kpi-top` → `fz-kpi-top`, `kpi-top-sub` → `fz-kpi-top-sub`, `kpi-avg` → `fz-kpi-avg`, `kpi-avg-sub` → `fz-kpi-avg-sub`, `kpi-total-records` → `fz-kpi-total-records`, `kpi-stations-sub` → `fz-kpi-stations-sub`, `chart-badge` → `fz-chart-badge`, `map-badge` → `fz-map-badge`); die Sortier-Buttons (`querySelectorAll(".fz-sort-btn")`) werden über den App-Container gescopt (kein Rename, Klasse)
 

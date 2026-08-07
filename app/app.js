@@ -84,7 +84,10 @@ async function fetchOdasJson(targetUrl, configdata = {}) {
   return JSON.parse(await fetchOdasResource(targetUrl, configdata));
 }
 
+let fzInstanzZaehler = 0;
+
 function app(configdata = {}, enclosingHtmlDivElement) {
+  const fzUid = "i" + ++fzInstanzZaehler;
   const API =
     configdata.apiurl || "https://mobidata-bw.de/api/3/action/datastore_search";
   const RES =
@@ -259,10 +262,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     if (!t) return "";
     return (
       '<button class="fz-kpi-info-toggle collapsed" type="button" data-bs-toggle="collapse" ' +
-      'data-bs-target="#fz-kpi-kontext-' + n + '" aria-expanded="false" ' +
-      'aria-controls="fz-kpi-kontext-' + n + '" aria-label="Erklärung zu diesem Wert">' +
+      'data-bs-target="#fz-kpi-kontext-' + n + '-' + fzUid + '" aria-expanded="false" ' +
+      'aria-controls="fz-kpi-kontext-' + n + '-' + fzUid + '" aria-label="Erklärung zu diesem Wert">' +
       '<span class="fz-kpi-info-icon" aria-hidden="true">ⓘ</span></button>' +
-      '<div id="fz-kpi-kontext-' + n + '" class="collapse">' +
+      '<div id="fz-kpi-kontext-' + n + '-' + fzUid + '" class="collapse">' +
       '<div class="fz-kpi-kontext">' + escapeHtml(t) + "</div></div>"
     );
   };
@@ -959,13 +962,13 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       ? '<p class="text-muted small mb-2">' + escapeHtml(stand) + "</p>"
       : "";
     wrap.innerHTML =
-      '<div class="accordion mb-4" id="fz-methodik-acc">' +
+      '<div class="accordion mb-4" id="fz-methodik-acc-' + fzUid + '">' +
       '<div class="accordion-item">' +
       '<h2 class="accordion-header">' +
       '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" ' +
-      'data-bs-target="#fz-methodik-body" aria-expanded="false" aria-controls="fz-methodik-body">' +
+      'data-bs-target="#fz-methodik-body-' + fzUid + '" aria-expanded="false" aria-controls="fz-methodik-body-' + fzUid + '">' +
       "Methodik &amp; Datenquelle</button></h2>" +
-      '<div id="fz-methodik-body" class="accordion-collapse collapse" data-bs-parent="#fz-methodik-acc">' +
+      '<div id="fz-methodik-body-' + fzUid + '" class="accordion-collapse collapse" data-bs-parent="#fz-methodik-acc-' + fzUid + '">' +
       '<div class="accordion-body">' +
       standZeile +
       hinweis +
@@ -1260,7 +1263,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       leafletMap = null;
     }
 
-    leafletMap = L.map("fz-map", { zoomControl: true }).setView([48.7, 9.1], 8);
+    leafletMap = L.map(root.querySelector("#fz-map"), { zoomControl: true }).setView([48.7, 9.1], 8);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
