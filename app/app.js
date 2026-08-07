@@ -92,6 +92,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   const PAGE = 1000;
   const PAGE_STATION = 10000;
   const DEFAULT_TABLE_PAGE_SIZE = 10;
+  const root = enclosingHtmlDivElement;
 
   // ── Styles injizieren ────────────────────────────────────────────────────
   const STYLE_ID = "fz-app-inline-style";
@@ -281,33 +282,33 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val" id="kpi-total">–</div>
+            <div class="val" id="fz-kpi-total">–</div>
             <div class="lbl">Fahrten gesamt</div>
-            <div class="sub" id="kpi-total-sub">geladene Messungen</div>
+            <div class="sub" id="fz-kpi-total-sub">geladene Messungen</div>
             ${kk(1)}
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val green" id="kpi-top">–</div>
+            <div class="val green" id="fz-kpi-top">–</div>
             <div class="lbl">Aktivste Zählstelle</div>
-            <div class="sub" id="kpi-top-sub">&nbsp;</div>
+            <div class="sub" id="fz-kpi-top-sub">&nbsp;</div>
             ${kk(2)}
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val orange" id="kpi-avg">–</div>
+            <div class="val orange" id="fz-kpi-avg">–</div>
             <div class="lbl">Ø Fahrten / Messung</div>
-            <div class="sub" id="kpi-avg-sub">&nbsp;</div>
+            <div class="sub" id="fz-kpi-avg-sub">&nbsp;</div>
             ${kk(3)}
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val purple" id="kpi-total-records">–</div>
+            <div class="val purple" id="fz-kpi-total-records">–</div>
             <div class="lbl">Datensätze gesamt</div>
-            <div class="sub" id="kpi-stations-sub">&nbsp;</div>
+            <div class="sub" id="fz-kpi-stations-sub">&nbsp;</div>
             ${kk(4)}
           </div>
         </div>
@@ -363,7 +364,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         <div class="fz-card-header">
           <span>📍 Zählstellen-Standorte</span>
           <div class="fz-map-tools">
-            <span class="badge" id="map-badge">lädt…</span>
+            <span class="badge" id="fz-map-badge">lädt…</span>
           </div>
         </div>
         <div id="fz-map-wrap">
@@ -377,7 +378,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
           <span>📈 Fahrten-Verlauf</span>
           <div class="fz-chart-tools">
             <button id="fz-btn-chart-fullscreen" class="btn btn-outline-primary btn-sm fz-chart-fullscreen-btn" type="button">Vollbild</button>
-            <span class="badge" id="chart-badge">&nbsp;</span>
+            <span class="badge" id="fz-chart-badge">&nbsp;</span>
           </div>
         </div>
         <div id="fz-chart-wrap" class="p-3">
@@ -492,14 +493,14 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function setLoadStatus(text, isError = false) {
-    const el = document.getElementById("fz-load-status");
+    const el = root.querySelector("#fz-load-status");
     if (!el) return;
     el.textContent = text;
     el.classList.toggle("error", isError);
   }
 
   function setLoadCancelVisible(visible) {
-    const btn = document.getElementById("fz-btn-cancel-load");
+    const btn = root.querySelector("#fz-btn-cancel-load");
     if (!btn) return;
     btn.hidden = !visible;
     btn.disabled = !visible;
@@ -513,7 +514,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function getFetchLimit() {
-    const raw = document.getElementById("fz-load-limit").value;
+    const raw = root.querySelector("#fz-load-limit").value;
     if (raw === "all") return Number.POSITIVE_INFINITY;
     const selected = Number(raw);
     if (!Number.isFinite(selected) || selected <= 0) return PAGE;
@@ -548,7 +549,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function refreshSortIndicators() {
-    document.querySelectorAll(".fz-sort-btn").forEach((th) => {
+    root.querySelectorAll(".fz-sort-btn").forEach((th) => {
       const indicator = th.querySelector(".fz-sort-ind");
       if (!indicator) return;
       if (th.dataset.col !== sortCol) {
@@ -561,7 +562,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── URL bauen ─────────────────────────────────────────────────────────────
   function buildUrl(offset, limitOverride) {
-    const station = document.getElementById("fz-filter-station").value;
+    const station = root.querySelector("#fz-filter-station").value;
     const limit =
       Number.isFinite(limitOverride) && limitOverride > 0
         ? limitOverride
@@ -582,9 +583,9 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Clientseitige Filterung (Zählstelle + Datum) ────────────────────────
   function applyClientFilters(records) {
-    const station = document.getElementById("fz-filter-station").value;
-    const from = document.getElementById("fz-filter-from").value;
-    const to = document.getElementById("fz-filter-to").value;
+    const station = root.querySelector("#fz-filter-station").value;
+    const from = root.querySelector("#fz-filter-from").value;
+    const to = root.querySelector("#fz-filter-to").value;
 
     if (!station && !from && !to) return records;
 
@@ -600,7 +601,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Tabellen-Suche (nur Tabelle, nicht KPI/Chart/Karte) ────────────────
   function applyTableSearch(records) {
-    const input = document.getElementById("fz-filter-search");
+    const input = root.querySelector("#fz-filter-search");
     const query = (input?.value || "").trim().toLowerCase();
     if (!query) return records;
 
@@ -675,7 +676,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
           setLoadCancelVisible(false);
           if (isLoadCancelled) {
             setLoadStatus("Ladevorgang abgebrochen");
-            document.getElementById("fz-table-body").innerHTML =
+            root.querySelector("#fz-table-body").innerHTML =
               `<tr><td colspan="6"><div class="fz-empty">Ladevorgang abgebrochen.</div></td></tr>`;
           }
         }
@@ -735,7 +736,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       setLoadStatus("Fehler beim Laden der Datensätze", true);
     }
 
-    document.getElementById("fz-table-body").innerHTML = `
+    root.querySelector("#fz-table-body").innerHTML = `
       <tr><td colspan="6">
         <div class="fz-error">
           ⚠️ Fehler beim Laden der Daten:<br>
@@ -796,7 +797,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Dropdown befüllen ─────────────────────────────────────────────────────
   function appendStationOptions(records) {
-    const sel = document.getElementById("fz-filter-station");
+    const sel = root.querySelector("#fz-filter-station");
     if (!sel || !Array.isArray(records) || records.length === 0) return;
 
     const existing = new Set(
@@ -837,7 +838,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         appendStationOptions(records);
         stationsLoaded = true;
         // Sicherstellen, dass beim Initialisieren kein alter Browserwert aktiv bleibt.
-        document.getElementById("fz-filter-station").value = "";
+        root.querySelector("#fz-filter-station").value = "";
       }
     } finally {
       stationsLoading = false;
@@ -846,7 +847,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Tabelle rendern ───────────────────────────────────────────────────────
   function renderTable(records) {
-    const tbody = document.getElementById("fz-table-body");
+    const tbody = root.querySelector("#fz-table-body");
     if (!records || records.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6"><div class="fz-empty">Keine Daten gefunden.</div></td></tr>`;
       return;
@@ -869,7 +870,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   function renderTablePage() {
     const total = tableViewRecords.length;
     const hasSearch = Boolean(
-      (document.getElementById("fz-filter-search")?.value || "").trim(),
+      (root.querySelector("#fz-filter-search")?.value || "").trim(),
     );
     const baseTotal = filteredRecords.length;
     const pages = Math.max(1, Math.ceil(total / tablePageSize));
@@ -880,22 +881,22 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const slice = tableViewRecords.slice(start, end);
 
     renderTable(slice);
-    const tableWrap = document.getElementById("fz-table-wrap");
+    const tableWrap = root.querySelector("#fz-table-wrap");
     if (tableWrap) tableWrap.scrollTop = 0;
 
-    document.getElementById("fz-page-info").textContent =
+    root.querySelector("#fz-page-info").textContent =
       `Seite ${tablePage} von ${pages} · ${formatNum(start + 1)}-${formatNum(end)}`;
-    document.getElementById("fz-btn-prev").disabled = tablePage <= 1;
-    document.getElementById("fz-btn-next").disabled = tablePage >= pages;
+    root.querySelector("#fz-btn-prev").disabled = tablePage <= 1;
+    root.querySelector("#fz-btn-next").disabled = tablePage >= pages;
 
     if (total === 0) {
-      document.getElementById("fz-table-info").textContent = hasSearch
+      root.querySelector("#fz-table-info").textContent = hasSearch
         ? `0 Treffer (von ${formatNum(baseTotal)} gefilterten Einträgen)`
         : `0 von ${formatNum(baseTotal)} Einträgen`;
       return;
     }
 
-    document.getElementById("fz-table-info").textContent = hasSearch
+    root.querySelector("#fz-table-info").textContent = hasSearch
       ? `${formatNum(start + 1)}-${formatNum(end)} von ${formatNum(total)} Treffern`
       : `${formatNum(start + 1)}-${formatNum(end)} von ${formatNum(total)} geladenen Einträgen`;
   }
@@ -916,26 +917,26 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const topStation = Object.entries(topMap).sort((a, b) => b[1] - a[1])[0];
     const stationCount = new Set(filtered.map((r) => r.counter_site)).size;
 
-    document.getElementById("kpi-total").textContent = formatNum(totSum);
-    document.getElementById("kpi-total-sub").textContent =
+    root.querySelector("#fz-kpi-total").textContent = formatNum(totSum);
+    root.querySelector("#fz-kpi-total-sub").textContent =
       `${formatNum(filtered.length)} Datensätze geladen · ${formatNum(total)} Datensätze gesamt`;
-    document.getElementById("kpi-top").textContent = topStation
+    root.querySelector("#fz-kpi-top").textContent = topStation
       ? topStation[0]
       : "–";
-    document.getElementById("kpi-top-sub").textContent = topStation
+    root.querySelector("#fz-kpi-top-sub").textContent = topStation
       ? formatNum(topStation[1]) + " Fahrten"
       : "";
-    document.getElementById("kpi-avg").textContent = formatNum(avg);
-    document.getElementById("kpi-avg-sub").textContent =
+    root.querySelector("#fz-kpi-avg").textContent = formatNum(avg);
+    root.querySelector("#fz-kpi-avg-sub").textContent =
       `über ${stationCount} Zählstelle(n)`;
-    document.getElementById("kpi-total-records").textContent = formatNum(total);
-    document.getElementById("kpi-stations-sub").textContent = "im Datensatz";
+    root.querySelector("#fz-kpi-total-records").textContent = formatNum(total);
+    root.querySelector("#fz-kpi-stations-sub").textContent = "im Datensatz";
   }
 
 
 
   function renderDatenfrische(records) {
-    const el = document.getElementById("fz-datenfrische");
+    const el = root.querySelector("#fz-datenfrische");
     if (!el) return;
     let newest = null;
     (records || []).forEach((r) => {
@@ -946,7 +947,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function renderMethodik(configdata) {
-    const wrap = document.getElementById("fz-methodik");
+    const wrap = root.querySelector("#fz-methodik");
     if (!wrap) return;
     const hinweis = (configdata.datenquelleHinweis || "").trim();
     const stand = (configdata.datenStand || "").trim();
@@ -993,7 +994,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function renderWeitereInfos(configdata) {
-    const wrap = document.getElementById("fz-weitere-infos");
+    const wrap = root.querySelector("#fz-weitere-infos");
     if (!wrap) return;
     const sourceLinks = buildSourceLinks(configdata);
     const extra = (configdata.weiterfuehrendeLinks || "").trim();
@@ -1123,7 +1124,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const labels = allBuckets.map((bucket) => formatBucketLabel(bucket));
 
     if (allBuckets.length === 0 || seriesEntries.length === 0) {
-      document.getElementById("chart-badge").textContent = "Keine Daten";
+      root.querySelector("#fz-chart-badge").textContent = "Keine Daten";
       if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
@@ -1162,10 +1163,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         : aggregation === "week"
           ? "wöchentlich"
           : "täglich";
-    document.getElementById("chart-badge").textContent =
+    root.querySelector("#fz-chart-badge").textContent =
       `${allBuckets.length} ${bucketLabel} · ${datasets.length} Linien · ${aggregationLabel}`;
 
-    const ctx = document.getElementById("fz-chart").getContext("2d");
+    const ctx = root.querySelector("#fz-chart").getContext("2d");
     if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(ctx, {
       type: "line",
@@ -1211,7 +1212,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function isChartFullscreen() {
-    const wrap = document.getElementById("fz-chart-wrap");
+    const wrap = root.querySelector("#fz-chart-wrap");
     return (
       document.fullscreenElement === wrap ||
       document.webkitFullscreenElement === wrap
@@ -1220,7 +1221,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   function syncChartFullscreenUi() {
     if (!chartFullscreenBtnEl) {
-      chartFullscreenBtnEl = document.getElementById("fz-btn-chart-fullscreen");
+      chartFullscreenBtnEl = root.querySelector("#fz-btn-chart-fullscreen");
     }
     const btn = chartFullscreenBtnEl;
     if (!btn) return;
@@ -1232,7 +1233,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function toggleChartFullscreen() {
-    const wrap = document.getElementById("fz-chart-wrap");
+    const wrap = root.querySelector("#fz-chart-wrap");
     if (!wrap) return;
 
     if (isChartFullscreen()) {
@@ -1312,7 +1313,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
     if (bounds.length > 0) leafletMap.fitBounds(bounds, { padding: [40, 40] });
     addMapFullscreenControl();
-    document.getElementById("map-badge").textContent =
+    root.querySelector("#fz-map-badge").textContent =
       `${entries.length} Zählstellen`;
   }
 
@@ -1323,7 +1324,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       activeLoadController.abort();
     }
 
-    document.getElementById("fz-table-body").innerHTML = `
+    root.querySelector("#fz-table-body").innerHTML = `
       <tr><td colspan="6">
         <div class="fz-spinner">
           <div class="spinner-border spinner-border-sm text-primary"></div>
@@ -1355,7 +1356,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function isMapFullscreen() {
-    const wrap = document.getElementById("fz-map-wrap");
+    const wrap = root.querySelector("#fz-map-wrap");
     return (
       document.fullscreenElement === wrap ||
       document.webkitFullscreenElement === wrap
@@ -1379,7 +1380,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function toggleMapFullscreen() {
-    const wrap = document.getElementById("fz-map-wrap");
+    const wrap = root.querySelector("#fz-map-wrap");
     if (!wrap) return;
 
     if (isMapFullscreen()) {
@@ -1452,28 +1453,28 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   // ── Events ────────────────────────────────────────────────────────────────
-  document.getElementById("fz-btn-filter").addEventListener("click", () => {
+  root.querySelector("#fz-btn-filter").addEventListener("click", () => {
     currentOffset = 0;
     loadAndRender(0);
   });
 
   // FIX: kein stationsLoaded = false → keine Race Condition
-  document.getElementById("fz-btn-reset").addEventListener("click", () => {
-    document.getElementById("fz-filter-station").value = "";
-    document.getElementById("fz-filter-from").value = "";
-    document.getElementById("fz-filter-to").value = "";
-    document.getElementById("fz-filter-search").value = "";
+  root.querySelector("#fz-btn-reset").addEventListener("click", () => {
+    root.querySelector("#fz-filter-station").value = "";
+    root.querySelector("#fz-filter-from").value = "";
+    root.querySelector("#fz-filter-to").value = "";
+    root.querySelector("#fz-filter-search").value = "";
     currentOffset = 0;
     loadAndRender(0);
   });
 
-  document.getElementById("fz-btn-prev").addEventListener("click", () => {
+  root.querySelector("#fz-btn-prev").addEventListener("click", () => {
     if (tablePage <= 1) return;
     tablePage -= 1;
     renderTablePage();
   });
 
-  document.getElementById("fz-btn-next").addEventListener("click", () => {
+  root.querySelector("#fz-btn-next").addEventListener("click", () => {
     const totalPages = Math.max(
       1,
       Math.ceil(tableViewRecords.length / tablePageSize),
@@ -1483,7 +1484,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     renderTablePage();
   });
 
-  document.getElementById("fz-page-size").addEventListener("change", (e) => {
+  root.querySelector("#fz-page-size").addEventListener("change", (e) => {
     const value = Number(e.target.value);
     if (!Number.isFinite(value) || value <= 0) return;
     tablePageSize = value;
@@ -1491,23 +1492,23 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     renderTablePage();
   });
 
-  document.getElementById("fz-load-limit").addEventListener("change", () => {
+  root.querySelector("#fz-load-limit").addEventListener("change", () => {
     currentOffset = 0;
     loadAndRender(0);
   });
 
-  document.getElementById("fz-filter-search").addEventListener("input", () => {
+  root.querySelector("#fz-filter-search").addEventListener("input", () => {
     tablePage = 1;
     tableViewRecords = sortRecords(applyTableSearch(filteredRecords));
     renderTablePage();
   });
 
-  document
-    .getElementById("fz-btn-chart-fullscreen")
+  root
+    .querySelector("#fz-btn-chart-fullscreen")
     .addEventListener("click", toggleChartFullscreen);
 
-  document
-    .getElementById("fz-btn-cancel-load")
+  root
+    .querySelector("#fz-btn-cancel-load")
     .addEventListener("click", cancelActiveLoad);
 
   document.addEventListener("fullscreenchange", syncMapFullscreenUi);
@@ -1516,7 +1517,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   document.addEventListener("webkitfullscreenchange", syncChartFullscreenUi);
 
   // Spalten-Sortierung
-  document.querySelectorAll(".fz-sort-btn").forEach((th) => {
+  root.querySelectorAll(".fz-sort-btn").forEach((th) => {
     th.addEventListener("click", () => {
       const col = th.dataset.col;
       if (sortCol === col) {
@@ -1533,10 +1534,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   });
 
   // ── Start ─────────────────────────────────────────────────────────────────
-  document.getElementById("fz-filter-station").value = "";
-  document.getElementById("fz-filter-from").value = "";
-  document.getElementById("fz-filter-to").value = "";
-  document.getElementById("fz-filter-search").value = "";
+  root.querySelector("#fz-filter-station").value = "";
+  root.querySelector("#fz-filter-from").value = "";
+  root.querySelector("#fz-filter-to").value = "";
+  root.querySelector("#fz-filter-search").value = "";
   populateStationFilter();
   renderMethodik(configdata);
   renderWeitereInfos(configdata);
