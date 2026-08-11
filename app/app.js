@@ -45,9 +45,10 @@ function getOdasProxyEndpoint(targetUrl, pathname) {
   )}`;
 }
 
-async function fetchViaOdasProxy(targetUrl) {
+async function fetchViaOdasProxy(targetUrl, options = {}) {
   const response = await fetch(getOdasProxyEndpoint(targetUrl), {
     method: "POST",
+    signal: options.signal,
   });
 
   if (!response.ok) {
@@ -62,26 +63,29 @@ async function fetchViaOdasProxy(targetUrl) {
   return proxyData.content;
 }
 
-async function fetchOdasResource(targetUrl, configdata = {}) {
+async function fetchOdasResource(targetUrl, configdata = {}, options = {}) {
   if (isOdasProxyEnabled(configdata)) {
-    return fetchViaOdasProxy(targetUrl);
+    return fetchViaOdasProxy(targetUrl, options);
   }
 
   try {
-    const response = await fetch(targetUrl);
+    const response = await fetch(targetUrl, { signal: options.signal });
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
     return response.text();
   } catch (error) {
+    if (error && error.name === "AbortError") {
+      throw error;
+    }
     throw new Error(
       `Direkter Datenabruf fehlgeschlagen (${error.message}). Bitte prüfen Sie die Daten-URL und die CORS-Freigabe der Datenquelle.`,
     );
   }
 }
 
-async function fetchOdasJson(targetUrl, configdata = {}) {
-  return JSON.parse(await fetchOdasResource(targetUrl, configdata));
+async function fetchOdasJson(targetUrl, configdata = {}, options = {}) {
+  return JSON.parse(await fetchOdasResource(targetUrl, configdata, options));
 }
 
 function escapeHtml(str) {
@@ -494,6 +498,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   let mapFullscreenBtnEl = null;
   let chartFullscreenBtnEl = null;
   let activeLoadController = null;
+  let activeLoadId = 0; // F-44: monotone Lauf-ID – nur der aktuellste Lauf schreibt State/UI
   let isLoadCancelled = false;
 
   // ── Hilfsfunktionen ───────────────────────────────────────────────────────
@@ -647,7 +652,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const url = buildUrl(offset, limit);
 
     try {
-      const json = await fetchOdasJson(url, configdata);
+      const json = await fetchOdasJson(url, configdata, { signal });
       if (!json.success) {
         return { result: null, errors: ["API-Fehler"], aborted: false };
       }
@@ -661,7 +666,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   // ── Daten laden ───────────────────────────────────────────────────────────
-  async function fetchData(offset) {
+  async function fetchData(offset, controller, loadId) {
     const requestedLimit = getFetchLimit();
     const loadAll = !Number.isFinite(requestedLimit);
     const records = [];
@@ -669,9 +674,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     let total = 0;
     const allErrors = [];
     let safetyCounter = 0;
-    const controller = new AbortController();
 
-    activeLoadController = controller;
     isLoadCancelled = false;
     setLoadCancelVisible(true);
 
@@ -691,9 +694,13 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         batchLimit,
         controller.signal,
       );
+      // F-44: Wurde dieser Lauf durch einen neueren Lauf (oder den Teardown)
+      // überholt, die Schleife beenden und kein weiteres Fetch starten.
+      if (activeLoadController !== controller || loadId !== activeLoadId) {
+        return null;
+      }
       if (aborted) {
-        if (activeLoadController === controller) {
-          activeLoadController = null;
+        if (activeLoadController === controller && loadId === activeLoadId) {
           setLoadCancelVisible(false);
           if (isLoadCancelled) {
             setLoadStatus("Ladevorgang abgebrochen");
@@ -715,7 +722,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       records.push(...batchRecords);
       currentOffset += batchRecords.length;
 
-      if (activeLoadController === controller) {
+      if (activeLoadController === controller && loadId === activeLoadId) {
         if (loadAll && total > 0) {
           setLoadStatus(
             `Lade Datensätze... ${formatNum(records.length)} von ${formatNum(total)}`,
@@ -732,8 +739,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
     if (records.length > 0) {
       const finalRecords = loadAll ? records : records.slice(0, requestedLimit);
-      if (activeLoadController === controller) {
-        activeLoadController = null;
+      if (activeLoadController === controller && loadId === activeLoadId) {
         setLoadCancelVisible(false);
         if (total > 0) {
           setLoadStatus(
@@ -751,19 +757,17 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       };
     }
 
-    if (activeLoadController === controller) {
-      activeLoadController = null;
+    if (activeLoadController === controller && loadId === activeLoadId) {
       setLoadCancelVisible(false);
       setLoadStatus("Fehler beim Laden der Datensätze", true);
+      root.querySelector("#fz-table-body").innerHTML = `
+        <tr><td colspan="6">
+          <div class="fz-error">
+            ⚠️ Fehler beim Laden der Daten:<br>
+            <small>${allErrors.join(" | ")}</small>
+          </div>
+        </td></tr>`;
     }
-
-    root.querySelector("#fz-table-body").innerHTML = `
-      <tr><td colspan="6">
-        <div class="fz-error">
-          ⚠️ Fehler beim Laden der Daten:<br>
-          <small>${allErrors.join(" | ")}</small>
-        </div>
-      </td></tr>`;
     return null;
   }
 
@@ -1345,6 +1349,12 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       activeLoadController.abort();
     }
 
+    // F-44: Jeder Lauf bekommt einen eigenen Controller + eine monotone
+    // Lauf-ID; nur der aktuellste Lauf darf State und UI schreiben.
+    const controller = new AbortController();
+    const loadId = ++activeLoadId;
+    activeLoadController = controller;
+
     root.querySelector("#fz-table-body").innerHTML = `
       <tr><td colspan="6">
         <div class="fz-spinner">
@@ -1353,7 +1363,11 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         </div>
       </td></tr>`;
 
-    const result = await fetchData(offset);
+    const result = await fetchData(offset, controller, loadId);
+    // F-44: Fortsetzung nur, wenn dieser Lauf noch der aktuellste ist.
+    if (activeLoadController !== controller || loadId !== activeLoadId) return;
+
+    activeLoadController = null;
     if (!result) return;
 
     totalRecords = result.total;
@@ -1372,8 +1386,14 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     renderKPIs(filteredRecords, totalRecords);
 
     refreshSortIndicators();
-    loadChartJs(() => renderChart(filteredRecords));
-    loadLeaflet(() => renderMap(filteredRecords));
+    loadChartJs(() => {
+      if (loadId !== activeLoadId) return;
+      renderChart(filteredRecords);
+    });
+    loadLeaflet(() => {
+      if (loadId !== activeLoadId) return;
+      renderMap(filteredRecords);
+    });
   }
 
   function isMapFullscreen() {
@@ -1574,10 +1594,11 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   loadAndRender(0);
 
   // F-43: Instanz-Cleanup in der Registry ablegen. Der Hook bricht einen
-  // laufenden Ladevorgang ab (Kopplung an die Token-/Controller-Mechanik,
-  // die Task 10 (F-44) ausbaut) und entfernt die Fullscreen-Listener.
+  // laufenden Ladevorgang ab (Kopplung an die Token-/Controller-Mechanik aus
+  // Task 10 (F-44)) und entfernt die Fullscreen-Listener.
   fahrradInstances.set(enclosingHtmlDivElement, () => {
     isLoadCancelled = true;
+    activeLoadId += 1; // F-44: Lauf-Token invalidieren – späte Fortsetzungen sind wirkungslos
     if (activeLoadController) activeLoadController.abort();
     fullscreenListeners.forEach(([type, fn]) => {
       document.removeEventListener(type, fn);

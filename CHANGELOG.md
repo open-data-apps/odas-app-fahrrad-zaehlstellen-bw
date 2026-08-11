@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.20.0 - 2026-08-11
+- FIX: Veraltete Antworten verwerfen (F-44): `fetchOdasResource`/`fetchOdasJson` reichen ein optionales `options.signal` an den tatsächlichen `fetch` (auch Proxy-POST) durch, `fetchBatch` übergibt das AbortSignal, und `fetchData`/`loadAndRender` brechen die Ladeschleife ab bzw. verwerfen die Fortsetzung, sobald ein neuerer Lauf gestartet wurde — nur der aktuellste Lauf schreibt Tabelle, KPIs, Chart, Karte, Ladeanzeige und Zählstellen-Dropdown
+
 ## 1.19.0 - 2026-08-11
 - FIX: Laufzeitressourcen beim Seitenwechsel freigeben (F-43): neuer `onPageLeave`-Hook entfernt die vier Fullscreen-Listener und bricht einen laufenden Datenladevorgang über `activeLoadController` ab
 
