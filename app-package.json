@@ -3,7 +3,7 @@
   "app-entwickler-name": "ondics-gmbh",
   "name-in-url": "fahrrad-zaehlstellen-bw",
   "name": "Fahrrad-Zählstellen",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "odas-app-icon": "assets/odas-app-icon.svg",
   "app-icon": "assets/odas-app-icon.svg",
   "kurzbeschreibung": "Interaktive Visualisierung der Eco-Counter-Fahrradzähldaten aus MobiData BW – mit KPIs, Karte, Zeitreihen-Chart und durchsuchbarer Tabelle.",

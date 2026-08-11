@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.19.0 - 2026-08-11
+- FIX: Laufzeitressourcen beim Seitenwechsel freigeben (F-43): neuer `onPageLeave`-Hook entfernt die vier Fullscreen-Listener und bricht einen laufenden Datenladevorgang über `activeLoadController` ab
+
 ## 1.18.0 - 2026-08-11
 - FIX: XSS- und URL-Vertrag geschlossen (F-35): `escapeHtml` als Top-Level-Helfer geführt und `safeHttpUrl` ergänzt; Tabellenspalten `counter_site`/`domain_name` und die Leaflet-Popup-Inhalte (Name, Stadt) werden escaped
 

@@ -100,6 +100,19 @@ function safeHttpUrl(value) {
 
 let fzInstanzZaehler = 0;
 
+// F-43: Registrierte Instanzen (Container -> Cleanup-Funktion), damit der
+// Top-Level-Hook onPageLeave() alle gemounteten Instanzen aufraeumen kann. Die
+// Base ruft den Hook global ohne Container-Parameter auf; eine iterierbare Map
+// ist daher das zur App passende Muster (Portfolio-Muster aus Task 9.1).
+const fahrradInstances = new Map();
+
+function onPageLeave(page) {
+  fahrradInstances.forEach((cleanup, container) => {
+    if (typeof cleanup === "function") cleanup();
+    fahrradInstances.delete(container);
+  });
+}
+
 function app(configdata = {}, enclosingHtmlDivElement) {
   const fzUid = "i" + ++fzInstanzZaehler;
   const API =
@@ -1519,10 +1532,17 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     .querySelector("#fz-btn-cancel-load")
     .addEventListener("click", cancelActiveLoad);
 
-  document.addEventListener("fullscreenchange", syncMapFullscreenUi);
-  document.addEventListener("webkitfullscreenchange", syncMapFullscreenUi);
-  document.addEventListener("fullscreenchange", syncChartFullscreenUi);
-  document.addEventListener("webkitfullscreenchange", syncChartFullscreenUi);
+  // Fullscreen-Listener-Referenzen im Instanz-Scope sammeln, damit der
+  // onPageLeave-Teardown (F-43) sie wieder entfernen kann.
+  const fullscreenListeners = [
+    ["fullscreenchange", syncMapFullscreenUi],
+    ["webkitfullscreenchange", syncMapFullscreenUi],
+    ["fullscreenchange", syncChartFullscreenUi],
+    ["webkitfullscreenchange", syncChartFullscreenUi],
+  ];
+  fullscreenListeners.forEach(([type, fn]) => {
+    document.addEventListener(type, fn);
+  });
 
   // Spalten-Sortierung
   root.querySelectorAll(".fz-sort-btn").forEach((th) => {
@@ -1552,6 +1572,18 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   refreshSortIndicators();
   syncChartFullscreenUi();
   loadAndRender(0);
+
+  // F-43: Instanz-Cleanup in der Registry ablegen. Der Hook bricht einen
+  // laufenden Ladevorgang ab (Kopplung an die Token-/Controller-Mechanik,
+  // die Task 10 (F-44) ausbaut) und entfernt die Fullscreen-Listener.
+  fahrradInstances.set(enclosingHtmlDivElement, () => {
+    isLoadCancelled = true;
+    if (activeLoadController) activeLoadController.abort();
+    fullscreenListeners.forEach(([type, fn]) => {
+      document.removeEventListener(type, fn);
+    });
+  });
+
   return null;
 }
 
