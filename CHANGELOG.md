@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.18.0 - 2026-08-11
+- FIX: XSS- und URL-Vertrag geschlossen (F-35): `escapeHtml` als Top-Level-Helfer geführt und `safeHttpUrl` ergänzt; Tabellenspalten `counter_site`/`domain_name` und die Leaflet-Popup-Inhalte (Name, Stadt) werden escaped
+
 ## 1.17.0 - 2026-08-08
 - CHG: Bootstrap-Ziele instanzeindeutig (F-32): KPI-Kontext- und Methodik-Accordion-Ziele (`#fz-kpi-kontext-<n>`, `#fz-methodik-acc`/`#fz-methodik-body`) um eine Instanzkennung ergänzt und die Leaflet-Karte containergebunden initialisiert (`L.map(root.querySelector("#fz-map"))` statt `L.map("fz-map")`; die div-ID `fz-map` bleibt unverändert) — mehrere Instanzen derselben App auf einer Seite klappen ihre Panels unabhängig auf, und jede Karte wird im eigenen Container initialisiert
 

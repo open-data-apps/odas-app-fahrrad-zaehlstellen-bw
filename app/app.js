@@ -84,6 +84,20 @@ async function fetchOdasJson(targetUrl, configdata = {}) {
   return JSON.parse(await fetchOdasResource(targetUrl, configdata));
 }
 
+function escapeHtml(str) {
+  return String(str == null ? "" : str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function safeHttpUrl(value) {
+  const s = String(value || "").trim();
+  return /^https?:\/\//i.test(s) ? s : "";
+}
+
 let fzInstanzZaehler = 0;
 
 function app(configdata = {}, enclosingHtmlDivElement) {
@@ -486,15 +500,6 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     }
   }
 
-  function escapeHtml(str) {
-    return String(str == null ? "" : str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-  }
-
   function setLoadStatus(text, isError = false) {
     const el = root.querySelector("#fz-load-status");
     if (!el) return;
@@ -860,8 +865,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         (r) => `
       <tr>
         <td>${formatDate(r.iso_timestamp)}</td>
-        <td><strong>${r.counter_site || "–"}</strong></td>
-        <td><span class="fz-badge-city">${r.domain_name || "–"}</span></td>
+        <td><strong>${escapeHtml(r.counter_site || "–")}</strong></td>
+        <td><span class="fz-badge-city">${escapeHtml(r.domain_name || "–")}</span></td>
         <td class="text-end fw-semibold">${formatNum(r.channels_all)}</td>
         <td class="text-end text-muted">${formatNum(r.channels_in)}</td>
         <td class="text-end text-muted">${formatNum(r.channels_out)}</td>
@@ -1302,8 +1307,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         .bindPopup(
           `
         <div style="min-width:160px;">
-          <b style="color:#1a56db;font-size:.95rem;">${name}</b><br>
-          <span style="color:#6b7280;font-size:.8rem;">${s.city}</span>
+          <b style="color:#1a56db;font-size:.95rem;">${escapeHtml(name)}</b><br>
+          <span style="color:#6b7280;font-size:.8rem;">${escapeHtml(s.city)}</span>
           <hr style="margin:.4rem 0;">
           🚲 <b>${s.total.toLocaleString("de-DE")}</b> Fahrten<br>
           📅 ${s.count} Messungen
