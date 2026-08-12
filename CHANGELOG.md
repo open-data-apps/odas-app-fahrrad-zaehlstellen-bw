@@ -1,5 +1,9 @@
 # Changelog
 
+
+## 1.21.0 - 2026-08-12
+- FIX: `app/index.html` auf den Template-Stand (F-47): Datei byte-gleich aus `oda-generic` übernommen — gültiges HTML, deutsche ARIA-Labels, Footer im Body; Titel und Fußzeile bleiben Platzhalter und werden zur Laufzeit aus der Instanz-Config überschrieben
+
 ## 1.20.0 - 2026-08-11
 - FIX: Veraltete Antworten verwerfen (F-44): `fetchOdasResource`/`fetchOdasJson` reichen ein optionales `options.signal` an den tatsächlichen `fetch` (auch Proxy-POST) durch, `fetchBatch` übergibt das AbortSignal, und `fetchData`/`loadAndRender` brechen die Ladeschleife ab bzw. verwerfen die Fortsetzung, sobald ein neuerer Lauf gestartet wurde — nur der aktuellste Lauf schreibt Tabelle, KPIs, Chart, Karte, Ladeanzeige und Zählstellen-Dropdown
 
