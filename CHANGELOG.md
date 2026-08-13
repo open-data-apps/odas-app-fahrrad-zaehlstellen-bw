@@ -1,6 +1,9 @@
 # Changelog
 
 
+## 1.22.0 - 2026-08-12
+- FIX: Laufzeit-Callbacks beim Seitenwechsel freigegeben (F-57): Der aufgerufene Cleanup-Hook gibt `chartInstance` genau einmal per `destroy()` und die Leaflet-Karte genau einmal per `remove()` frei (jeweils Referenz auf `null`). Der Resize-/invalidateSize-Timeout nach Teardown ruft nicht mehr `null.resize()`/`null.invalidateSize()` auf. Die Registry-Instanz wird jetzt vor dem ersten asynchronen Start registriert, sodass ein Seitenwechsel während eines laufenden Daten-/Bibliotheksloads die Instanz sicher abräumt.
+
 ## 1.21.0 - 2026-08-12
 - FIX: `app/index.html` auf den Template-Stand (F-47): Datei byte-gleich aus `oda-generic` übernommen — gültiges HTML, deutsche ARIA-Labels, Footer im Body; Titel und Fußzeile bleiben Platzhalter und werden zur Laufzeit aus der Instanz-Config überschrieben
 

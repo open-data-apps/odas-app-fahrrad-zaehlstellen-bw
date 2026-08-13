@@ -1253,7 +1253,12 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
     btn.textContent = isChartFullscreen() ? "Vollbild beenden" : "Vollbild";
     if (chartInstance) {
-      setTimeout(() => chartInstance.resize(), 120);
+      // F-57: nach dem Teardown ist chartInstance null – der Timeout darf
+      // dann nicht null.resize() aufrufen, sondern muss die aktuelle Referenz
+      // erneut prüfen.
+      setTimeout(() => {
+        if (chartInstance) chartInstance.resize();
+      }, 120);
     }
   }
 
@@ -1416,7 +1421,12 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       : '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1 1h5v2H3v3H1V1zm9 0h5v5h-2V3h-3V1zM1 10h2v3h3v2H1v-5zm12 3v-3h2v5h-5v-2h3z"/></svg>';
     btn.setAttribute("aria-label", btn.title);
     if (leafletMap) {
-      setTimeout(() => leafletMap.invalidateSize(), 120);
+      // F-57: nach dem Teardown ist leafletMap null – der Timeout darf dann
+      // nicht null.invalidateSize() aufrufen, sondern muss die aktuelle
+      // Referenz erneut prüfen.
+      setTimeout(() => {
+        if (leafletMap) leafletMap.invalidateSize();
+      }, 120);
     }
   }
 
@@ -1581,6 +1591,32 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     });
   });
 
+  // F-43/F-57: Instanz-Cleanup früh in der Registry ablegen – vor dem ersten
+  // asynchronen Start (populateStationFilter/loadAndRender), damit ein
+  // Seitenwechsel während eines laufenden Daten-/Bibliotheksloads die Instanz
+  // sicher über onPageLeave abräumen kann. Der Hook bricht einen laufenden
+  // Ladevorgang ab (Token-/Controller-Mechanik aus F-44), entfernt die
+  // Fullscreen-Listener und gibt Chart (destroy) sowie Leaflet-Karte (remove)
+  // genau einmal frei.
+  fahrradInstances.set(enclosingHtmlDivElement, () => {
+    isLoadCancelled = true;
+    activeLoadId += 1; // F-44: Lauf-Token invalidieren – späte Fortsetzungen sind wirkungslos
+    if (activeLoadController) activeLoadController.abort();
+    fullscreenListeners.forEach(([type, fn]) => {
+      document.removeEventListener(type, fn);
+    });
+    // F-57: Chart genau einmal via destroy() freigeben.
+    if (chartInstance) {
+      chartInstance.destroy();
+      chartInstance = null;
+    }
+    // F-57: Leaflet-Karte genau einmal via remove() freigeben.
+    if (leafletMap) {
+      leafletMap.remove();
+      leafletMap = null;
+    }
+  });
+
   // ── Start ─────────────────────────────────────────────────────────────────
   root.querySelector("#fz-filter-station").value = "";
   root.querySelector("#fz-filter-from").value = "";
@@ -1592,18 +1628,6 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   refreshSortIndicators();
   syncChartFullscreenUi();
   loadAndRender(0);
-
-  // F-43: Instanz-Cleanup in der Registry ablegen. Der Hook bricht einen
-  // laufenden Ladevorgang ab (Kopplung an die Token-/Controller-Mechanik aus
-  // Task 10 (F-44)) und entfernt die Fullscreen-Listener.
-  fahrradInstances.set(enclosingHtmlDivElement, () => {
-    isLoadCancelled = true;
-    activeLoadId += 1; // F-44: Lauf-Token invalidieren – späte Fortsetzungen sind wirkungslos
-    if (activeLoadController) activeLoadController.abort();
-    fullscreenListeners.forEach(([type, fn]) => {
-      document.removeEventListener(type, fn);
-    });
-  });
 
   return null;
 }
