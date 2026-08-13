@@ -112,9 +112,21 @@ const fahrradInstances = new Map();
 
 function onPageLeave(page) {
   fahrradInstances.forEach((cleanup, container) => {
-    if (typeof cleanup === "function") cleanup();
-    fahrradInstances.delete(container);
+    // F-57: Jedes Instanz-Cleanup isoliert kapseln. Wirft ein Cleanup, darf das
+    // weder onPageLeave selbst zum Werfen bringen noch die übrigen gemounteten
+    // Instanzen vom Abräumen abhalten.
+    try {
+      if (typeof cleanup === "function") cleanup();
+    } catch (err) {
+      console.warn(
+        "[fahrrad-zaehlstellen-bw] Instanz-Cleanup in onPageLeave fehlgeschlagen:",
+        err,
+      );
+    }
   });
+  // F-57: Registry immer vollständig leeren, damit ein zweiter Seitenwechsel
+  // keinen Cleanup mehr auslöst – auch wenn ein einzelnes Cleanup geworfen hat.
+  fahrradInstances.clear();
 }
 
 function app(configdata = {}, enclosingHtmlDivElement) {
