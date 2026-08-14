@@ -130,9 +130,15 @@ function onPageLeave(page) {
 }
 
 function app(configdata = {}, enclosingHtmlDivElement) {
+  const quelle = String(configdata.apiurl || "").trim();
+  if (!quelle || /^\{\{.*\}\}$/.test(quelle) || /^<.*>$/.test(quelle)) {
+    enclosingHtmlDivElement.innerHTML =
+      '<div class="alert alert-info" role="alert">Es ist keine Datenquelle konfiguriert.</div>';
+    return null;
+  }
+
   const fzUid = "i" + ++fzInstanzZaehler;
-  const API =
-    configdata.apiurl || "https://mobidata-bw.de/api/3/action/datastore_search";
+  const API = configdata.apiurl;
   const RES =
     configdata.resourceid || "bbb274af-580d-4228-851e-c8daf32d3c6e";
   const PAGE = 1000;
