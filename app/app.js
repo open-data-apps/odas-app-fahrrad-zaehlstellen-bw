@@ -482,8 +482,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
           </div>
           <span id="fz-page-info" class="text-muted" style="font-size:.82rem;"></span>
           <div class="fz-pagination-right">
-            <label for="fz-page-size" class="fz-page-size-label">Einträge / Seite</label>
-            <select id="fz-page-size" class="form-select form-select-sm" style="width:auto;">
+            <label for="fz-page-size-${fzUid}" class="fz-page-size-label">Einträge / Seite</label>
+            <select id="fz-page-size-${fzUid}" class="form-select form-select-sm" style="width:auto;">
               <option value="10" selected>10</option>
               <option value="25">25</option>
               <option value="50">50</option>
@@ -1553,7 +1553,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     renderTablePage();
   });
 
-  root.querySelector("#fz-page-size").addEventListener("change", (e) => {
+  root.querySelector(`#fz-page-size-${fzUid}`).addEventListener("change", (e) => {
     const value = Number(e.target.value);
     if (!Number.isFinite(value) || value <= 0) return;
     tablePageSize = value;
