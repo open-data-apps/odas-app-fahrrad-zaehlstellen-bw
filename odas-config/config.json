@@ -1,5 +1,4 @@
 {
-  "apiVersion": "1",
   "proxyAktiv": "ja",
   "titel": "Fahrrad-Zählstellen",
   "seitentitel": "Fahrrad-Zählstellen",
@@ -38,7 +37,6 @@
     "<p>Die angezeigten Daten werden über den ODAS-Proxy geladen. Die Anfrage an die Datenquelle stellt der ODAS-Server; Ihre IP-Adresse wird dorthin nicht übermittelt. Maßgeblich ist der Schalter <code>proxyAktiv</code> der Instanz-Konfiguration.</p>",
     "<h3>Beim Aufruf kontaktierte Drittanbieter</h3><p>Folgende externe Server werden kontaktiert. Dabei werden IP-Adresse und User-Agent der Besucher:innen an diese Anbieter übertragen:</p><ul><li><strong>tile.openstreetmap.org</strong> — Kartenkacheln (OpenStreetMap)</li></ul>"
   ],
-  "urlODP": "https://open-data-musterstadt.ckan.de",
   "urlDaten": "https://mobidata-bw.de/dataset/eco-counter-fahrradzahler",
   "fusszeile": [
     "(C) Copyright 2026 | ",
