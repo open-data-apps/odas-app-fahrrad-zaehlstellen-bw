@@ -1,5 +1,7 @@
 # Changelog
 
+## 1.26.0 - 2026-08-20
+- Markdown-Metadaten: Paketbeschreibungen auf echtes Markdown umgestellt, exakte Identität Top-Level/Instanz hergestellt, lokale HTML-Fixture semantisch gespiegelt.
 
 ## 1.25.0 - 2026-08-20
 - FIX: 29 von 37 generierten `fz-*`-IDs trugen keine Instanzkennung; jetzt durchgängig mit `fzUid` suffigiert (F-71). Betroffen waren u. a. KPI-, Filter-, Lade-, Karten-, Chart- und Tabellen-Elemente sowie die Vollbild-CSS für Karte/Chart, die dafür von ID- auf Klassen-Selektoren (`.fz-map`, `.fz-map-wrap`, `.fz-chart`, `.fz-chart-wrap`) umgestellt wurde, damit die gemeinsam genutzte `<style>`-Instanz weiterhin alle App-Instanzen bedient
