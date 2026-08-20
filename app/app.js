@@ -195,15 +195,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       background: #eff6ff; color: #1a56db; padding: .25rem .6rem; border-radius: 999px; }
     .fz-filter-bar { background: #fff; border-radius: 1rem;
       box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1rem 1.25rem; }
-    #fz-map { height: 460px; width: 100%; }
-    #fz-map-wrap:fullscreen { background: #fff; padding: .75rem; }
-    #fz-map-wrap:fullscreen #fz-map { height: calc(100vh - 1.5rem); }
-    #fz-map-wrap:-webkit-full-screen { background: #fff; padding: .75rem; }
-    #fz-map-wrap:-webkit-full-screen #fz-map { height: calc(100vh - 1.5rem); }
-    #fz-chart-wrap:fullscreen { background: #fff; padding: 1rem; }
-    #fz-chart-wrap:fullscreen #fz-chart { height: calc(100vh - 7rem) !important; max-height: none !important; }
-    #fz-chart-wrap:-webkit-full-screen { background: #fff; padding: 1rem; }
-    #fz-chart-wrap:-webkit-full-screen #fz-chart { height: calc(100vh - 7rem) !important; max-height: none !important; }
+    .fz-map { height: 460px; width: 100%; }
+    .fz-map-wrap:fullscreen { background: #fff; padding: .75rem; }
+    .fz-map-wrap:fullscreen .fz-map { height: calc(100vh - 1.5rem); }
+    .fz-map-wrap:-webkit-full-screen { background: #fff; padding: .75rem; }
+    .fz-map-wrap:-webkit-full-screen .fz-map { height: calc(100vh - 1.5rem); }
+    .fz-chart-wrap:fullscreen { background: #fff; padding: 1rem; }
+    .fz-chart-wrap:fullscreen .fz-chart { height: calc(100vh - 7rem) !important; max-height: none !important; }
+    .fz-chart-wrap:-webkit-full-screen { background: #fff; padding: 1rem; }
+    .fz-chart-wrap:-webkit-full-screen .fz-chart { height: calc(100vh - 7rem) !important; max-height: none !important; }
     .fz-map-tools { display: flex; align-items: center; gap: .5rem; }
     .fz-chart-tools { display: flex; align-items: center; gap: .5rem; }
     .fz-chart-fullscreen-btn { font-size: .72rem; line-height: 1.2; }
@@ -313,7 +313,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     .fz-sort-ind { font-size: .72rem; opacity: .9; margin-left: .15rem; }
     .leaflet-popup-content b { color: #1a56db; }
     @media (max-width: 768px) {
-      #fz-map { height: 300px; }
+      .fz-map { height: 300px; }
       .fz-table-wrap { max-height: none; overflow: visible; }
       .fz-table-search-input-wrap { max-width: none; }
       .fz-kpi .val { font-size: 1.4rem; }
@@ -346,39 +346,39 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       <p>Diese App zeigt Zeitreihen zu Fahrradfahrten an automatischen Zählstellen.</p>
     </div>
     <div class="px-3 px-md-4">
-      <div id="fz-datenfrische" class="text-muted small text-end mb-2"></div>
+      <div id="fz-datenfrische-${fzUid}" class="text-muted small text-end mb-2"></div>
 
       <!-- KPIs -->
       <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val" id="fz-kpi-total">–</div>
+            <div class="val" id="fz-kpi-total-${fzUid}">–</div>
             <div class="lbl">Fahrten gesamt</div>
-            <div class="sub" id="fz-kpi-total-sub">geladene Messungen</div>
+            <div class="sub" id="fz-kpi-total-sub-${fzUid}">geladene Messungen</div>
             ${kk(1)}
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val green" id="fz-kpi-top">–</div>
+            <div class="val green" id="fz-kpi-top-${fzUid}">–</div>
             <div class="lbl">Aktivste Zählstelle</div>
-            <div class="sub" id="fz-kpi-top-sub">&nbsp;</div>
+            <div class="sub" id="fz-kpi-top-sub-${fzUid}">&nbsp;</div>
             ${kk(2)}
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val orange" id="fz-kpi-avg">–</div>
+            <div class="val orange" id="fz-kpi-avg-${fzUid}">–</div>
             <div class="lbl">Ø Fahrten / Messung</div>
-            <div class="sub" id="fz-kpi-avg-sub">&nbsp;</div>
+            <div class="sub" id="fz-kpi-avg-sub-${fzUid}">&nbsp;</div>
             ${kk(3)}
           </div>
         </div>
         <div class="col-6 col-md-3">
           <div class="fz-kpi">
-            <div class="val purple" id="fz-kpi-total-records">–</div>
+            <div class="val purple" id="fz-kpi-total-records-${fzUid}">–</div>
             <div class="lbl">Datensätze gesamt</div>
-            <div class="sub" id="fz-kpi-stations-sub">&nbsp;</div>
+            <div class="sub" id="fz-kpi-stations-sub-${fzUid}">&nbsp;</div>
             ${kk(4)}
           </div>
         </div>
@@ -389,21 +389,21 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         <div class="row g-2 align-items-end">
           <div class="col-12 col-md-3">
             <label class="form-label fw-semibold mb-1" style="font-size:.82rem;">Zählstelle</label>
-            <select id="fz-filter-station" class="form-select form-select-sm">
+            <select id="fz-filter-station-${fzUid}" class="form-select form-select-sm">
               <option value="">Alle Zählstellen</option>
             </select>
           </div>
           <div class="col-6 col-md-2">
             <label class="form-label fw-semibold mb-1" style="font-size:.82rem;">Von</label>
-            <input type="date" id="fz-filter-from" class="form-control form-control-sm">
+            <input type="date" id="fz-filter-from-${fzUid}" class="form-control form-control-sm">
           </div>
           <div class="col-6 col-md-2">
             <label class="form-label fw-semibold mb-1" style="font-size:.82rem;">Bis</label>
-            <input type="date" id="fz-filter-to" class="form-control form-control-sm">
+            <input type="date" id="fz-filter-to-${fzUid}" class="form-control form-control-sm">
           </div>
           <div class="col-6 col-md-3">
             <label class="form-label fw-semibold mb-1" style="font-size:.82rem;">Zu ladende Datensätze</label>
-            <select id="fz-load-limit" class="form-select form-select-sm">
+            <select id="fz-load-limit-${fzUid}" class="form-select form-select-sm">
               <option value="100">100</option>
               <option value="250">250</option>
               <option value="500">500</option>
@@ -415,15 +415,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
             </select>
           </div>
           <div class="col-6 col-md-2 d-flex gap-2">
-            <button id="fz-btn-filter" class="btn btn-primary btn-sm flex-grow-1">Filtern</button>
-            <button id="fz-btn-reset" class="btn btn-outline-secondary btn-sm" title="Filter zurücksetzen">✕</button>
+            <button id="fz-btn-filter-${fzUid}" class="btn btn-primary btn-sm flex-grow-1">Filtern</button>
+            <button id="fz-btn-reset-${fzUid}" class="btn btn-outline-secondary btn-sm" title="Filter zurücksetzen">✕</button>
           </div>
         </div>
         <div class="row mt-2">
           <div class="col-12">
             <div class="fz-load-row">
-              <div id="fz-load-status" class="fz-load-status">Bereit</div>
-              <button id="fz-btn-cancel-load" type="button" class="btn btn-outline-danger btn-sm fz-load-cancel" hidden>Abbrechen</button>
+              <div id="fz-load-status-${fzUid}" class="fz-load-status">Bereit</div>
+              <button id="fz-btn-cancel-load-${fzUid}" type="button" class="btn btn-outline-danger btn-sm fz-load-cancel" hidden>Abbrechen</button>
             </div>
           </div>
         </div>
@@ -434,11 +434,11 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         <div class="fz-card-header">
           <span>📍 Zählstellen-Standorte</span>
           <div class="fz-map-tools">
-            <span class="badge" id="fz-map-badge">lädt…</span>
+            <span class="badge" id="fz-map-badge-${fzUid}">lädt…</span>
           </div>
         </div>
-        <div id="fz-map-wrap">
-          <div id="fz-map"></div>
+        <div id="fz-map-wrap-${fzUid}" class="fz-map-wrap">
+          <div id="fz-map-${fzUid}" class="fz-map"></div>
         </div>
       </div>
 
@@ -447,12 +447,12 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         <div class="fz-card-header">
           <span>📈 Fahrten-Verlauf</span>
           <div class="fz-chart-tools">
-            <button id="fz-btn-chart-fullscreen" class="btn btn-outline-primary btn-sm fz-chart-fullscreen-btn" type="button">Vollbild</button>
-            <span class="badge" id="fz-chart-badge">&nbsp;</span>
+            <button id="fz-btn-chart-fullscreen-${fzUid}" class="btn btn-outline-primary btn-sm fz-chart-fullscreen-btn" type="button">Vollbild</button>
+            <span class="badge" id="fz-chart-badge-${fzUid}">&nbsp;</span>
           </div>
         </div>
-        <div id="fz-chart-wrap" class="p-3">
-          <canvas id="fz-chart" style="max-height:280px;"></canvas>
+        <div id="fz-chart-wrap-${fzUid}" class="fz-chart-wrap p-3">
+          <canvas id="fz-chart-${fzUid}" class="fz-chart" style="max-height:280px;"></canvas>
         </div>
       </div>
 
@@ -460,18 +460,18 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       <div class="fz-card mb-4">
         <div class="fz-card-header">
           <span>📋 Messdaten</span>
-          <span class="badge" id="fz-table-info">–</span>
+          <span class="badge" id="fz-table-info-${fzUid}">–</span>
         </div>
         <div class="fz-table-search-wrap">
           <div class="fz-table-search-row">
             <p class="fz-table-search-label">Schnellsuche in Messdaten</p>
             <div class="fz-table-search-input-wrap">
               <svg viewBox="0 0 16 16" aria-hidden="true"><path fill="currentColor" d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85 1.06-1.06-3.85-3.85h.338zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
-              <input type="search" id="fz-filter-search" class="form-control form-control-sm fz-table-search" placeholder="Suche nach Datum, Zählstelle, Stadt oder Zahlenwerten" aria-label="Suche in Messdaten">
+              <input type="search" id="fz-filter-search-${fzUid}" class="form-control form-control-sm fz-table-search" placeholder="Suche nach Datum, Zählstelle, Stadt oder Zahlenwerten" aria-label="Suche in Messdaten">
             </div>
           </div>
         </div>
-        <div id="fz-table-wrap" class="table-responsive fz-table-wrap">
+        <div id="fz-table-wrap-${fzUid}" class="table-responsive fz-table-wrap">
           <table class="table fz-table mb-0">
             <thead>
               <tr>
@@ -483,7 +483,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
                 <th class="text-end fz-sort-btn" data-col="channels_out">Auswärts <span class="fz-sort-ind">↕</span></th>
               </tr>
             </thead>
-            <tbody id="fz-table-body">
+            <tbody id="fz-table-body-${fzUid}">
               <tr><td colspan="6">
                 <div class="fz-spinner">
                   <div class="spinner-border spinner-border-sm text-primary"></div>
@@ -495,10 +495,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         </div>
         <div class="fz-pagination">
           <div class="fz-pagination-left">
-            <button id="fz-btn-prev" class="btn btn-outline-secondary btn-sm" disabled>‹ Zurück</button>
-            <button id="fz-btn-next" class="btn btn-outline-secondary btn-sm">Weiter ›</button>
+            <button id="fz-btn-prev-${fzUid}" class="btn btn-outline-secondary btn-sm" disabled>‹ Zurück</button>
+            <button id="fz-btn-next-${fzUid}" class="btn btn-outline-secondary btn-sm">Weiter ›</button>
           </div>
-          <span id="fz-page-info" class="text-muted" style="font-size:.82rem;"></span>
+          <span id="fz-page-info-${fzUid}" class="text-muted" style="font-size:.82rem;"></span>
           <div class="fz-pagination-right">
             <label for="fz-page-size-${fzUid}" class="fz-page-size-label">Einträge / Seite</label>
             <select id="fz-page-size-${fzUid}" class="form-select form-select-sm" style="width:auto;">
@@ -511,8 +511,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         </div>
       </div>
 
-      <div id="fz-methodik"></div>
-      <div id="fz-weitere-infos"></div>
+      <div id="fz-methodik-${fzUid}"></div>
+      <div id="fz-weitere-infos-${fzUid}"></div>
 
     </div>
   </div>`;
@@ -555,14 +555,14 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function setLoadStatus(text, isError = false) {
-    const el = root.querySelector("#fz-load-status");
+    const el = root.querySelector(`#fz-load-status-${fzUid}`);
     if (!el) return;
     el.textContent = text;
     el.classList.toggle("error", isError);
   }
 
   function setLoadCancelVisible(visible) {
-    const btn = root.querySelector("#fz-btn-cancel-load");
+    const btn = root.querySelector(`#fz-btn-cancel-load-${fzUid}`);
     if (!btn) return;
     btn.hidden = !visible;
     btn.disabled = !visible;
@@ -576,7 +576,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function getFetchLimit() {
-    const raw = root.querySelector("#fz-load-limit").value;
+    const raw = root.querySelector(`#fz-load-limit-${fzUid}`).value;
     if (raw === "all") return Number.POSITIVE_INFINITY;
     const selected = Number(raw);
     if (!Number.isFinite(selected) || selected <= 0) return PAGE;
@@ -624,7 +624,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── URL bauen ─────────────────────────────────────────────────────────────
   function buildUrl(offset, limitOverride) {
-    const station = root.querySelector("#fz-filter-station").value;
+    const station = root.querySelector(`#fz-filter-station-${fzUid}`).value;
     const limit =
       Number.isFinite(limitOverride) && limitOverride > 0
         ? limitOverride
@@ -645,9 +645,9 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Clientseitige Filterung (Zählstelle + Datum) ────────────────────────
   function applyClientFilters(records) {
-    const station = root.querySelector("#fz-filter-station").value;
-    const from = root.querySelector("#fz-filter-from").value;
-    const to = root.querySelector("#fz-filter-to").value;
+    const station = root.querySelector(`#fz-filter-station-${fzUid}`).value;
+    const from = root.querySelector(`#fz-filter-from-${fzUid}`).value;
+    const to = root.querySelector(`#fz-filter-to-${fzUid}`).value;
 
     if (!station && !from && !to) return records;
 
@@ -663,7 +663,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Tabellen-Suche (nur Tabelle, nicht KPI/Chart/Karte) ────────────────
   function applyTableSearch(records) {
-    const input = root.querySelector("#fz-filter-search");
+    const input = root.querySelector(`#fz-filter-search-${fzUid}`);
     const query = (input?.value || "").trim().toLowerCase();
     if (!query) return records;
 
@@ -740,7 +740,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
           setLoadCancelVisible(false);
           if (isLoadCancelled) {
             setLoadStatus("Ladevorgang abgebrochen");
-            root.querySelector("#fz-table-body").innerHTML =
+            root.querySelector(`#fz-table-body-${fzUid}`).innerHTML =
               `<tr><td colspan="6"><div class="fz-empty">Ladevorgang abgebrochen.</div></td></tr>`;
           }
         }
@@ -796,7 +796,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     if (activeLoadController === controller && loadId === activeLoadId) {
       setLoadCancelVisible(false);
       setLoadStatus("Fehler beim Laden der Datensätze", true);
-      root.querySelector("#fz-table-body").innerHTML = `
+      root.querySelector(`#fz-table-body-${fzUid}`).innerHTML = `
         <tr><td colspan="6">
           <div class="fz-error">
             ⚠️ Fehler beim Laden der Daten:<br>
@@ -858,7 +858,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Dropdown befüllen ─────────────────────────────────────────────────────
   function appendStationOptions(records) {
-    const sel = root.querySelector("#fz-filter-station");
+    const sel = root.querySelector(`#fz-filter-station-${fzUid}`);
     if (!sel || !Array.isArray(records) || records.length === 0) return;
 
     const existing = new Set(
@@ -899,7 +899,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         appendStationOptions(records);
         stationsLoaded = true;
         // Sicherstellen, dass beim Initialisieren kein alter Browserwert aktiv bleibt.
-        root.querySelector("#fz-filter-station").value = "";
+        root.querySelector(`#fz-filter-station-${fzUid}`).value = "";
       }
     } finally {
       stationsLoading = false;
@@ -908,7 +908,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   // ── Tabelle rendern ───────────────────────────────────────────────────────
   function renderTable(records) {
-    const tbody = root.querySelector("#fz-table-body");
+    const tbody = root.querySelector(`#fz-table-body-${fzUid}`);
     if (!records || records.length === 0) {
       tbody.innerHTML = `<tr><td colspan="6"><div class="fz-empty">Keine Daten gefunden.</div></td></tr>`;
       return;
@@ -931,7 +931,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   function renderTablePage() {
     const total = tableViewRecords.length;
     const hasSearch = Boolean(
-      (root.querySelector("#fz-filter-search")?.value || "").trim(),
+      (root.querySelector(`#fz-filter-search-${fzUid}`)?.value || "").trim(),
     );
     const baseTotal = filteredRecords.length;
     const pages = Math.max(1, Math.ceil(total / tablePageSize));
@@ -942,22 +942,22 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const slice = tableViewRecords.slice(start, end);
 
     renderTable(slice);
-    const tableWrap = root.querySelector("#fz-table-wrap");
+    const tableWrap = root.querySelector(`#fz-table-wrap-${fzUid}`);
     if (tableWrap) tableWrap.scrollTop = 0;
 
-    root.querySelector("#fz-page-info").textContent =
+    root.querySelector(`#fz-page-info-${fzUid}`).textContent =
       `Seite ${tablePage} von ${pages} · ${formatNum(start + 1)}-${formatNum(end)}`;
-    root.querySelector("#fz-btn-prev").disabled = tablePage <= 1;
-    root.querySelector("#fz-btn-next").disabled = tablePage >= pages;
+    root.querySelector(`#fz-btn-prev-${fzUid}`).disabled = tablePage <= 1;
+    root.querySelector(`#fz-btn-next-${fzUid}`).disabled = tablePage >= pages;
 
     if (total === 0) {
-      root.querySelector("#fz-table-info").textContent = hasSearch
+      root.querySelector(`#fz-table-info-${fzUid}`).textContent = hasSearch
         ? `0 Treffer (von ${formatNum(baseTotal)} gefilterten Einträgen)`
         : `0 von ${formatNum(baseTotal)} Einträgen`;
       return;
     }
 
-    root.querySelector("#fz-table-info").textContent = hasSearch
+    root.querySelector(`#fz-table-info-${fzUid}`).textContent = hasSearch
       ? `${formatNum(start + 1)}-${formatNum(end)} von ${formatNum(total)} Treffern`
       : `${formatNum(start + 1)}-${formatNum(end)} von ${formatNum(total)} geladenen Einträgen`;
   }
@@ -978,26 +978,26 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const topStation = Object.entries(topMap).sort((a, b) => b[1] - a[1])[0];
     const stationCount = new Set(filtered.map((r) => r.counter_site)).size;
 
-    root.querySelector("#fz-kpi-total").textContent = formatNum(totSum);
-    root.querySelector("#fz-kpi-total-sub").textContent =
+    root.querySelector(`#fz-kpi-total-${fzUid}`).textContent = formatNum(totSum);
+    root.querySelector(`#fz-kpi-total-sub-${fzUid}`).textContent =
       `${formatNum(filtered.length)} Datensätze geladen · ${formatNum(total)} Datensätze gesamt`;
-    root.querySelector("#fz-kpi-top").textContent = topStation
+    root.querySelector(`#fz-kpi-top-${fzUid}`).textContent = topStation
       ? topStation[0]
       : "–";
-    root.querySelector("#fz-kpi-top-sub").textContent = topStation
+    root.querySelector(`#fz-kpi-top-sub-${fzUid}`).textContent = topStation
       ? formatNum(topStation[1]) + " Fahrten"
       : "";
-    root.querySelector("#fz-kpi-avg").textContent = formatNum(avg);
-    root.querySelector("#fz-kpi-avg-sub").textContent =
+    root.querySelector(`#fz-kpi-avg-${fzUid}`).textContent = formatNum(avg);
+    root.querySelector(`#fz-kpi-avg-sub-${fzUid}`).textContent =
       `über ${stationCount} Zählstelle(n)`;
-    root.querySelector("#fz-kpi-total-records").textContent = formatNum(total);
-    root.querySelector("#fz-kpi-stations-sub").textContent = "im Datensatz";
+    root.querySelector(`#fz-kpi-total-records-${fzUid}`).textContent = formatNum(total);
+    root.querySelector(`#fz-kpi-stations-sub-${fzUid}`).textContent = "im Datensatz";
   }
 
 
 
   function renderDatenfrische(records) {
-    const el = root.querySelector("#fz-datenfrische");
+    const el = root.querySelector(`#fz-datenfrische-${fzUid}`);
     if (!el) return;
     let newest = null;
     (records || []).forEach((r) => {
@@ -1008,7 +1008,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function renderMethodik(configdata) {
-    const wrap = root.querySelector("#fz-methodik");
+    const wrap = root.querySelector(`#fz-methodik-${fzUid}`);
     if (!wrap) return;
     const hinweis = (configdata.datenquelleHinweis || "").trim();
     const stand = (configdata.datenStand || "").trim();
@@ -1055,7 +1055,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function renderWeitereInfos(configdata) {
-    const wrap = root.querySelector("#fz-weitere-infos");
+    const wrap = root.querySelector(`#fz-weitere-infos-${fzUid}`);
     if (!wrap) return;
     const sourceLinks = buildSourceLinks(configdata);
     const extra = (configdata.weiterfuehrendeLinks || "").trim();
@@ -1185,7 +1185,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const labels = allBuckets.map((bucket) => formatBucketLabel(bucket));
 
     if (allBuckets.length === 0 || seriesEntries.length === 0) {
-      root.querySelector("#fz-chart-badge").textContent = "Keine Daten";
+      root.querySelector(`#fz-chart-badge-${fzUid}`).textContent = "Keine Daten";
       if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
@@ -1224,10 +1224,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         : aggregation === "week"
           ? "wöchentlich"
           : "täglich";
-    root.querySelector("#fz-chart-badge").textContent =
+    root.querySelector(`#fz-chart-badge-${fzUid}`).textContent =
       `${allBuckets.length} ${bucketLabel} · ${datasets.length} Linien · ${aggregationLabel}`;
 
-    const ctx = root.querySelector("#fz-chart").getContext("2d");
+    const ctx = root.querySelector(`#fz-chart-${fzUid}`).getContext("2d");
     if (chartInstance) chartInstance.destroy();
     chartInstance = new Chart(ctx, {
       type: "line",
@@ -1273,7 +1273,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function isChartFullscreen() {
-    const wrap = root.querySelector("#fz-chart-wrap");
+    const wrap = root.querySelector(`#fz-chart-wrap-${fzUid}`);
     return (
       document.fullscreenElement === wrap ||
       document.webkitFullscreenElement === wrap
@@ -1282,7 +1282,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   function syncChartFullscreenUi() {
     if (!chartFullscreenBtnEl) {
-      chartFullscreenBtnEl = root.querySelector("#fz-btn-chart-fullscreen");
+      chartFullscreenBtnEl = root.querySelector(`#fz-btn-chart-fullscreen-${fzUid}`);
     }
     const btn = chartFullscreenBtnEl;
     if (!btn) return;
@@ -1299,7 +1299,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function toggleChartFullscreen() {
-    const wrap = root.querySelector("#fz-chart-wrap");
+    const wrap = root.querySelector(`#fz-chart-wrap-${fzUid}`);
     if (!wrap) return;
 
     if (isChartFullscreen()) {
@@ -1326,7 +1326,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       leafletMap = null;
     }
 
-    leafletMap = L.map(root.querySelector("#fz-map"), { zoomControl: true }).setView([48.7, 9.1], 8);
+    leafletMap = L.map(root.querySelector(`#fz-map-${fzUid}`), { zoomControl: true }).setView([48.7, 9.1], 8);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
         '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
@@ -1379,7 +1379,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
     if (bounds.length > 0) leafletMap.fitBounds(bounds, { padding: [40, 40] });
     addMapFullscreenControl();
-    root.querySelector("#fz-map-badge").textContent =
+    root.querySelector(`#fz-map-badge-${fzUid}`).textContent =
       `${entries.length} Zählstellen`;
   }
 
@@ -1396,7 +1396,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const loadId = ++activeLoadId;
     activeLoadController = controller;
 
-    root.querySelector("#fz-table-body").innerHTML = `
+    root.querySelector(`#fz-table-body-${fzUid}`).innerHTML = `
       <tr><td colspan="6">
         <div class="fz-spinner">
           <div class="spinner-border spinner-border-sm text-primary"></div>
@@ -1438,7 +1438,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function isMapFullscreen() {
-    const wrap = root.querySelector("#fz-map-wrap");
+    const wrap = root.querySelector(`#fz-map-wrap-${fzUid}`);
     return (
       document.fullscreenElement === wrap ||
       document.webkitFullscreenElement === wrap
@@ -1467,7 +1467,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   function toggleMapFullscreen() {
-    const wrap = root.querySelector("#fz-map-wrap");
+    const wrap = root.querySelector(`#fz-map-wrap-${fzUid}`);
     if (!wrap) return;
 
     if (isMapFullscreen()) {
@@ -1540,28 +1540,28 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   // ── Events ────────────────────────────────────────────────────────────────
-  root.querySelector("#fz-btn-filter").addEventListener("click", () => {
+  root.querySelector(`#fz-btn-filter-${fzUid}`).addEventListener("click", () => {
     currentOffset = 0;
     loadAndRender(0);
   });
 
   // FIX: kein stationsLoaded = false → keine Race Condition
-  root.querySelector("#fz-btn-reset").addEventListener("click", () => {
-    root.querySelector("#fz-filter-station").value = "";
-    root.querySelector("#fz-filter-from").value = "";
-    root.querySelector("#fz-filter-to").value = "";
-    root.querySelector("#fz-filter-search").value = "";
+  root.querySelector(`#fz-btn-reset-${fzUid}`).addEventListener("click", () => {
+    root.querySelector(`#fz-filter-station-${fzUid}`).value = "";
+    root.querySelector(`#fz-filter-from-${fzUid}`).value = "";
+    root.querySelector(`#fz-filter-to-${fzUid}`).value = "";
+    root.querySelector(`#fz-filter-search-${fzUid}`).value = "";
     currentOffset = 0;
     loadAndRender(0);
   });
 
-  root.querySelector("#fz-btn-prev").addEventListener("click", () => {
+  root.querySelector(`#fz-btn-prev-${fzUid}`).addEventListener("click", () => {
     if (tablePage <= 1) return;
     tablePage -= 1;
     renderTablePage();
   });
 
-  root.querySelector("#fz-btn-next").addEventListener("click", () => {
+  root.querySelector(`#fz-btn-next-${fzUid}`).addEventListener("click", () => {
     const totalPages = Math.max(
       1,
       Math.ceil(tableViewRecords.length / tablePageSize),
@@ -1579,23 +1579,23 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     renderTablePage();
   });
 
-  root.querySelector("#fz-load-limit").addEventListener("change", () => {
+  root.querySelector(`#fz-load-limit-${fzUid}`).addEventListener("change", () => {
     currentOffset = 0;
     loadAndRender(0);
   });
 
-  root.querySelector("#fz-filter-search").addEventListener("input", () => {
+  root.querySelector(`#fz-filter-search-${fzUid}`).addEventListener("input", () => {
     tablePage = 1;
     tableViewRecords = sortRecords(applyTableSearch(filteredRecords));
     renderTablePage();
   });
 
   root
-    .querySelector("#fz-btn-chart-fullscreen")
+    .querySelector(`#fz-btn-chart-fullscreen-${fzUid}`)
     .addEventListener("click", toggleChartFullscreen);
 
   root
-    .querySelector("#fz-btn-cancel-load")
+    .querySelector(`#fz-btn-cancel-load-${fzUid}`)
     .addEventListener("click", cancelActiveLoad);
 
   // Fullscreen-Listener-Referenzen im Instanz-Scope sammeln, damit der
@@ -1654,10 +1654,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   });
 
   // ── Start ─────────────────────────────────────────────────────────────────
-  root.querySelector("#fz-filter-station").value = "";
-  root.querySelector("#fz-filter-from").value = "";
-  root.querySelector("#fz-filter-to").value = "";
-  root.querySelector("#fz-filter-search").value = "";
+  root.querySelector(`#fz-filter-station-${fzUid}`).value = "";
+  root.querySelector(`#fz-filter-from-${fzUid}`).value = "";
+  root.querySelector(`#fz-filter-to-${fzUid}`).value = "";
+  root.querySelector(`#fz-filter-search-${fzUid}`).value = "";
   populateStationFilter();
   renderMethodik(configdata);
   renderWeitereInfos(configdata);

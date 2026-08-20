@@ -1,6 +1,9 @@
 # Changelog
 
 
+## 1.25.0 - 2026-08-20
+- FIX: 29 von 37 generierten `fz-*`-IDs trugen keine Instanzkennung; jetzt durchgängig mit `fzUid` suffigiert (F-71). Betroffen waren u. a. KPI-, Filter-, Lade-, Karten-, Chart- und Tabellen-Elemente sowie die Vollbild-CSS für Karte/Chart, die dafür von ID- auf Klassen-Selektoren (`.fz-map`, `.fz-map-wrap`, `.fz-chart`, `.fz-chart-wrap`) umgestellt wurde, damit die gemeinsam genutzte `<style>`-Instanz weiterhin alle App-Instanzen bedient
+
 ## 1.24.0 - 2026-08-17
 - `fetchOdasJson()` wirft jetzt bei nicht-JSON-Antworten (CSV, HTML, leerer Body) eine sprechende Konfigurationsfehlermeldung statt der rohen `JSON.parse`-Parserfehlermeldung (F-66)
 
