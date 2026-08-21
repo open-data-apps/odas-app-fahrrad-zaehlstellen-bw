@@ -9,7 +9,7 @@
     "<p>Die Fahrrad-Zählstellen-App visualisiert Radverkehrsdaten aus automatischen Dauerzählstellen in Baden-Württemberg.</p>",
     "<p>Sie macht Zählwerte, Standorte und zeitliche Entwicklungen als Karte, Kennzahlen, Diagramm und Tabelle zugänglich.</p>",
     "<h2>Methodik</h2>",
-    "<p>Die App bildet die Abruf-URL aus der konfigurierten CKAN-Basis (<code>apiurl</code>) und der Ressource (<code>resourceid</code>) für den Endpunkt <code>datastore_search</code> (<code>?resource_id=…&amp;limit=…&amp;offset=…&amp;sort=iso_timestamp desc</code>) und lädt <code>result.records</code> paginiert über <code>limit</code>/<code>offset</code> – im Live-Betrieb über den ODAS-Proxy (<code>proxyAktiv</code>), sonst direkt –; optional wird eine Zählstelle als <code>filters={counter_site}</code> serverseitig mitgegeben, weitere Filter laufen im Browser.</p>",
+    "<p>Die App bildet die Abruf-URL aus der konfigurierten CKAN-Basis (<code>apiurls.zaehlstellen</code>) und der Ressource (<code>resourceid</code>) für den Endpunkt <code>datastore_search</code> (<code>?resource_id=…&amp;limit=…&amp;offset=…&amp;sort=iso_timestamp desc</code>) und lädt <code>result.records</code> paginiert über <code>limit</code>/<code>offset</code> – im Live-Betrieb über den ODAS-Proxy (<code>proxyAktiv</code>), sonst direkt –; optional wird eine Zählstelle als <code>filters={counter_site}</code> serverseitig mitgegeben, weitere Filter laufen im Browser.</p>",
     "<p>Zählstelle und Zeitraum (<code>von</code>/<code>bis</code> auf <code>iso_timestamp</code>) werden clientseitig auf die geladenen Messungen angewendet; die Tabelle ist standardmäßig nach <code>iso_timestamp</code> absteigend sortiert, alle relevanten Spalten sind sortierbar, und die Anzeige lässt sich über wählbare Seitengröße (10/25/50/100) und eine Schnellsuche über Datum, Zählstelle, Stadt und Zahlenwerten eingrenzen.</p>",
     "<p>Kennzahlen werden aus den gefilterten Messungen berechnet – Summe <code>channels_all</code> (Fahrten gesamt), Anzahl geladener versus serverseitig gemeldeter Datensätze (<code>total</code>), Anzahl unterschiedlicher Zählstellen, Durchschnitt <code>channels_all</code> je Messung sowie die aktivste Zählstelle nach summierten <code>channels_all</code>; der Datenstand orientiert sich am jüngsten <code>iso_timestamp</code>.</p>",
     "<p>Das Diagramm aggregiert <code>channels_all</code> je Zählstelle nach Tag; übersteigt der Zeitraum etwa 120 Tage wird nach Woche, über etwa 365 Tage nach Monat gebündelt (Tag/Woche/Monat, maximal sieben Serien, Rest als „Weitere“). Richtungsfelder <code>channels_in</code>/<code>channels_out</code> werden nicht als Zeitreihe gezeichnet, sondern in der Tabelle je Messung gezeigt.</p>",
@@ -46,7 +46,13 @@
     "App-Entwickler: Ondics GmbH | ",
     "Provided by: Ondics GmbH"
   ],
-  "apiurl": "https://mobidata-bw.de/api/3/action/datastore_search",
+  "apiurls": [
+    {
+      "name": "zaehlstellen",
+      "label": "URL zu den Daten",
+      "url": "https://mobidata-bw.de/api/3/action/datastore_search"
+    }
+  ],
   "resourceid": "bbb274af-580d-4228-851e-c8daf32d3c6e",
   "kpiKontext1": "Summe aller geladenen Messwerte – abhängig von Filter und Ladegrenze.",
   "kpiKontext2": "Zählstelle mit den meisten erfassten Fahrten im geladenen Zeitraum.",

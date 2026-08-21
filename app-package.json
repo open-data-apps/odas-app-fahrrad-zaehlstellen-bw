@@ -3,7 +3,7 @@
   "app-entwickler-name": "ondics-gmbh",
   "name-in-url": "fahrrad-zaehlstellen-bw",
   "name": "Fahrrad-Zählstellen",
-  "version": "1.26.0",
+  "version": "1.27.0",
   "odas-app-icon": "assets/odas-app-icon.svg",
   "app-icon": "assets/odas-app-icon.svg",
   "kurzbeschreibung": "Interaktive Visualisierung der Eco-Counter-Fahrradzähldaten aus MobiData BW – mit KPIs, Karte, Zeitreihen-Chart und durchsuchbarer Tabelle.",
@@ -15,7 +15,7 @@
     "",
     "## Methodik",
     "",
-    "Die App bildet die Abruf-URL aus der konfigurierten CKAN-Basis (`apiurl`) und der Ressource (`resourceid`) für den Endpunkt `datastore_search` (`?resource_id=…&limit=…&offset=…&sort=iso_timestamp desc`) und lädt `result.records` paginiert über `limit`/`offset` – im Live-Betrieb über den ODAS-Proxy (`proxyAktiv`), sonst direkt –; optional wird eine Zählstelle als `filters={counter_site}` serverseitig mitgegeben, weitere Filter laufen im Browser.",
+    "Die App bildet die Abruf-URL aus der konfigurierten CKAN-Basis (`apiurls.zaehlstellen`) und der Ressource (`resourceid`) für den Endpunkt `datastore_search` (`?resource_id=…&limit=…&offset=…&sort=iso_timestamp desc`) und lädt `result.records` paginiert über `limit`/`offset` – im Live-Betrieb über den ODAS-Proxy (`proxyAktiv`), sonst direkt –; optional wird eine Zählstelle als `filters={counter_site}` serverseitig mitgegeben, weitere Filter laufen im Browser.",
     "",
     "Zählstelle und Zeitraum (`von`/`bis` auf `iso_timestamp`) werden clientseitig auf die geladenen Messungen angewendet; die Tabelle ist standardmäßig nach `iso_timestamp` absteigend sortiert, alle relevanten Spalten sind sortierbar, und die Anzeige lässt sich über wählbare Seitengröße (10/25/50/100) und eine Schnellsuche über Datum, Zählstelle, Stadt und Zahlenwerten eingrenzen.",
     "",
@@ -140,7 +140,7 @@
         "",
         "## Methodik",
         "",
-        "Die App bildet die Abruf-URL aus der konfigurierten CKAN-Basis (`apiurl`) und der Ressource (`resourceid`) für den Endpunkt `datastore_search` (`?resource_id=…&limit=…&offset=…&sort=iso_timestamp desc`) und lädt `result.records` paginiert über `limit`/`offset` – im Live-Betrieb über den ODAS-Proxy (`proxyAktiv`), sonst direkt –; optional wird eine Zählstelle als `filters={counter_site}` serverseitig mitgegeben, weitere Filter laufen im Browser.",
+        "Die App bildet die Abruf-URL aus der konfigurierten CKAN-Basis (`apiurls.zaehlstellen`) und der Ressource (`resourceid`) für den Endpunkt `datastore_search` (`?resource_id=…&limit=…&offset=…&sort=iso_timestamp desc`) und lädt `result.records` paginiert über `limit`/`offset` – im Live-Betrieb über den ODAS-Proxy (`proxyAktiv`), sonst direkt –; optional wird eine Zählstelle als `filters={counter_site}` serverseitig mitgegeben, weitere Filter laufen im Browser.",
         "",
         "Zählstelle und Zeitraum (`von`/`bis` auf `iso_timestamp`) werden clientseitig auf die geladenen Messungen angewendet; die Tabelle ist standardmäßig nach `iso_timestamp` absteigend sortiert, alle relevanten Spalten sind sortierbar, und die Anzeige lässt sich über wählbare Seitengröße (10/25/50/100) und eine Schnellsuche über Datum, Zählstelle, Stadt und Zahlenwerten eingrenzen.",
         "",
@@ -285,17 +285,24 @@
       },
       "erforderlich": "ja"
     },
-    "apiurl": {
-      "label": "URL zu den Daten",
+    "apiurls": {
+      "label": "URLs zu Datenressourcen",
       "category": "datenherkunft",
-      "hilfe": "Basis-URL der CKAN Datastore API (wird über Proxy aufgerufen)",
+      "hilfe": "Direkter Download-, Datei- oder API-Endpunkt der tatsächlich verwendeten Datenquelle(n). Mehrere Einträge möglich.",
+      "typ": "array",
       "format": {
         "typ": "url",
-        "laenge": 255
+        "laenge": 500
       },
-      "default": "https://mobidata-bw.de/api/3/action/datastore_search",
-      "beispiel": "https://mobidata-bw.de/api/3/action/datastore_search",
-      "erforderlich": "ja"
+      "urls": [
+        {
+          "name": "zaehlstellen",
+          "label": "URL zu den Daten",
+          "default": "https://mobidata-bw.de/api/3/action/datastore_search",
+          "beispiel": "https://mobidata-bw.de/api/3/action/datastore_search",
+          "erforderlich": "ja"
+        }
+      ]
     },
     "resourceid": {
       "label": "Resource-ID",

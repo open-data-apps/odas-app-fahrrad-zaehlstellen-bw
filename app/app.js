@@ -3,7 +3,7 @@
  * Visualisiert Fahrradzähldaten über eine CKAN Datastore API.
  * Bootstrap 5.3 | Leaflet (dynamisch) | Chart.js (dynamisch)
  *
- * configdata: { "apiurl": "..." }
+ * configdata: { "apiurls": [{ "name": "zaehlstellen", "label": "...", "url": "..." }] }
  */
 
 function isOdasProxyEnabled(configdata = {}) {
@@ -84,6 +84,17 @@ async function fetchOdasResource(targetUrl, configdata = {}, options = {}) {
   }
 }
 
+/**
+ * Löst eine benannte Datenressource aus configdata.apiurls auf.
+ * Neue apiurls-Form (typ: "array"); das frühere skalare apiurl wird nicht mehr gelesen.
+ * @returns {string} getrimmte URL, oder "" für den Zustand "keine Quelle konfiguriert"
+ */
+function getOdasApiUrl(configdata, name) {
+  const liste = Array.isArray(configdata && configdata.apiurls) ? configdata.apiurls : [];
+  const treffer = liste.find((eintrag) => eintrag && eintrag.name === name);
+  return String((treffer && treffer.url) || "").trim();
+}
+
 async function fetchOdasJson(targetUrl, configdata = {}, options = {}) {
   const rawContent = await fetchOdasResource(targetUrl, configdata, options);
   try {
@@ -148,7 +159,7 @@ function onPageLeave(page) {
 }
 
 function app(configdata = {}, enclosingHtmlDivElement) {
-  const quelle = String(configdata.apiurl || "").trim();
+  const quelle = getOdasApiUrl(configdata, "zaehlstellen");
   if (!quelle || /^\{\{.*\}\}$/.test(quelle) || /^<.*>$/.test(quelle)) {
     enclosingHtmlDivElement.innerHTML =
       '<div class="alert alert-info" role="alert">Es ist keine Datenquelle konfiguriert.</div>';
@@ -156,7 +167,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   const fzUid = "i" + ++fzInstanzZaehler;
-  const API = configdata.apiurl;
+  const API = getOdasApiUrl(configdata, "zaehlstellen");
   const RES =
     configdata.resourceid || "bbb274af-580d-4228-851e-c8daf32d3c6e";
   const PAGE = 1000;
@@ -1036,7 +1047,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   function buildSourceLinks(configdata) {
     const links = [];
     const datensatz = (configdata.urlDaten || "").trim();
-    const apiurl = (configdata.apiurl || "").trim();
+    const apiurl = getOdasApiUrl(configdata, "zaehlstellen");
     const resourceid = (configdata.resourceid || "").trim();
 
     let portal = "";

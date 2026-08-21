@@ -76,7 +76,7 @@ App läuft auf http://localhost:8089 (Konfiguration wird lokal geladen).
 
 | Parameter                | Beschreibung                                                        | Pflicht |
 | ------------------------ | ------------------------------------------------------------------- | ------- |
-| `apiurl`                 | Basis-URL zur CKAN Datastore API (`/api/3/action/datastore_search`) | ja      |
+| `apiurls`                | URLs zu Datenressourcen. Eintrag `zaehlstellen`: Basis-URL zur CKAN Datastore API (`/api/3/action/datastore_search`) | ja (Eintrag `zaehlstellen`) |
 | `resourceid`             | Resource-ID des Datensatzes                                         | ja      |
 | `urlDaten`               | URL zur Datensatzseite im Open Data Portal                          | ja      |
 | `kpiKontext1`–`kpiKontext4` | Optionale Erklärtexte unter den vier KPI-Kacheln                | nein    |
@@ -134,7 +134,7 @@ dem EntryPoint `websecure` und dem Zertifikatsresolver `letsencrypt`.
    wird `ja`. Der ODAS-Proxy `…/odp-data` steht im Standalone-Container nicht zur
    Verfuegung; die mitgelieferte `nginx.conf` kennt keinen entsprechenden
    `location`-Block.
-3. Die Datenquelle (`apiurl`) auf eine CORS-freigegebene Ressource umstellen. Die
+3. Die Datenquelle (`apiurls.zaehlstellen`) auf eine CORS-freigegebene Ressource umstellen. Die
    mitgelieferte Quelle (`mobidata-bw.de`) sendet keinen
    `Access-Control-Allow-Origin`-Header und ist standalone **nicht** nutzbar.
 4. Starten:
