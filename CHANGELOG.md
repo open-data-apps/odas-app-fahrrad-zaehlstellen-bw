@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.30.0 - 2026-08-25
+- **CHG:** Proxy-Aufruf sendet die vollständige Ziel-URL statt nur Pfad+Query, damit die neue Origin-Allowlist-Prüfung der ODAS-Plattform greift (bisher implizite Auflösung gegen den ersten konfigurierten `apiurl`).
+- **FIX:** Tote Anbieter-Shortcodes in Kontakt/Impressum ersetzt (`{{odp.anbieter.url-extern}}` → `{{odp.anbieter.url}}`, `tel:{{odp.anbieter.telcode}}` → `tel:{{odp.anbieter.tel}}`).
+
+
 ## 1.29.0 - 2026-08-25
 - **CHG:** apiurls-Standard „Eine Quelle = eine vollständige URL“ umgesetzt: `resource_id` gehört in die `datastore_search`-URL (Eintrag `zaehlstellen`); Instanzfeld `resourceid` entfernt.
 - **CHG:** Der Code liest die Resource-ID aus der konfigurierten URL statt aus einem eigenen Config-Key; unvollständige URLs führen zu einem klaren Hinweis.
