@@ -50,10 +50,9 @@
     {
       "name": "zaehlstellen",
       "label": "URL zu den Daten",
-      "url": "https://mobidata-bw.de/api/3/action/datastore_search"
+      "url": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=bbb274af-580d-4228-851e-c8daf32d3c6e"
     }
   ],
-  "resourceid": "bbb274af-580d-4228-851e-c8daf32d3c6e",
   "kpiKontext1": "Summe aller geladenen Messwerte – abhängig von Filter und Ladegrenze.",
   "kpiKontext2": "Zählstelle mit den meisten erfassten Fahrten im geladenen Zeitraum.",
   "kpiKontext3": "Durchschnittliche Fahrten pro Messzeitpunkt über alle geladenen Zählstellen.",

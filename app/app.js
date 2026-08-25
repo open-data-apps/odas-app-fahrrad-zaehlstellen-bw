@@ -95,6 +95,16 @@ function getOdasApiUrl(configdata, name) {
   return String((treffer && treffer.url) || "").trim();
 }
 
+function fzResourceIdFromApiUrl(apiUrl) {
+  // Eine Quelle = eine vollständige URL: Die resource_id steht im Query der
+  // konfigurierten datastore_search-URL, nicht in einem eigenen Config-Key.
+  try {
+    return new URL(apiUrl).searchParams.get("resource_id") || "";
+  } catch (_error) {
+    return "";
+  }
+}
+
 async function fetchOdasJson(targetUrl, configdata = {}, options = {}) {
   const rawContent = await fetchOdasResource(targetUrl, configdata, options);
   try {
@@ -168,8 +178,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
   const fzUid = "i" + ++fzInstanzZaehler;
   const API = getOdasApiUrl(configdata, "zaehlstellen");
-  const RES =
-    configdata.resourceid || "bbb274af-580d-4228-851e-c8daf32d3c6e";
+  const RES = fzResourceIdFromApiUrl(API);
+
+  if (!RES) {
+    // Eine Quelle = eine vollständige URL: Ohne resource_id im Query ist die
+    // konfigurierte datastore_search-URL unvollständig.
+    enclosingHtmlDivElement.innerHTML =
+      '<div class="alert alert-info" role="alert">Die konfigurierte DataStore-URL enthält keine resource_id. Bitte eine vollständige datastore_search-URL eintragen.</div>';
+    return null;
+  }
   const PAGE = 1000;
   const PAGE_STATION = 10000;
   const DEFAULT_TABLE_PAGE_SIZE = 10;
@@ -1048,7 +1065,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const links = [];
     const datensatz = (configdata.urlDaten || "").trim();
     const apiurl = getOdasApiUrl(configdata, "zaehlstellen");
-    const resourceid = (configdata.resourceid || "").trim();
+    const resourceid = fzResourceIdFromApiUrl(apiurl);
 
     let portal = "";
     try {

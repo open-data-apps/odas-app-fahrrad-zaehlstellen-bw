@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.29.0 - 2026-08-25
+- **CHG:** apiurls-Standard „Eine Quelle = eine vollständige URL“ umgesetzt: `resource_id` gehört in die `datastore_search`-URL (Eintrag `zaehlstellen`); Instanzfeld `resourceid` entfernt.
+- **CHG:** Der Code liest die Resource-ID aus der konfigurierten URL statt aus einem eigenen Config-Key; unvollständige URLs führen zu einem klaren Hinweis.
+
 ## 1.28.0 - 2026-08-22
 - **CHG:** `version` in `app-package.json` zu `app-version` umbenannt.
 - **ENH:** Top-Level-Feld `app-package-version` ergänzt (Wert `"2"`: mehrere benannte API-URLs über `instanz-config.apiurls`).
