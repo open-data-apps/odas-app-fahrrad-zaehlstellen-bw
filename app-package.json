@@ -1,139 +1,14 @@
 {
-  "app-entwickler-id": "12343",
-  "app-entwickler-name": "ondics-gmbh",
-  "name-in-url": "fahrrad-zaehlstellen-bw",
-  "name": "Fahrrad-Zählstellen",
-  "app-version": "1.30.0",
-  "app-package-version": "2",
-  "odas-app-icon": "assets/odas-app-icon.svg",
-  "app-icon": "assets/odas-app-icon.svg",
-  "kurzbeschreibung": "Interaktive Visualisierung der Eco-Counter-Fahrradzähldaten aus MobiData BW – mit KPIs, Karte, Zeitreihen-Chart und durchsuchbarer Tabelle.",
-  "beschreibung": [
-    "_multiline_",
-    "Die Fahrrad-Zählstellen-App visualisiert Radverkehrsdaten aus automatischen Dauerzählstellen in Baden-Württemberg.",
-    "",
-    "Sie macht Zählwerte, Standorte und zeitliche Entwicklungen als Karte, Kennzahlen, Diagramm und Tabelle zugänglich.",
-    "",
-    "## Methodik",
-    "",
-    "Die App ruft die konfigurierte vollständige `datastore_search`-URL (`apiurls.zaehlstellen`, inklusive `resource_id`) ab (`?resource_id=…&limit=…&offset=…&sort=iso_timestamp desc`) und lädt `result.records` paginiert über `limit`/`offset` – im Live-Betrieb über den ODAS-Proxy (`proxyAktiv`), sonst direkt –; optional wird eine Zählstelle als `filters={counter_site}` serverseitig mitgegeben, weitere Filter laufen im Browser.",
-    "",
-    "Zählstelle und Zeitraum (`von`/`bis` auf `iso_timestamp`) werden clientseitig auf die geladenen Messungen angewendet; die Tabelle ist standardmäßig nach `iso_timestamp` absteigend sortiert, alle relevanten Spalten sind sortierbar, und die Anzeige lässt sich über wählbare Seitengröße (10/25/50/100) und eine Schnellsuche über Datum, Zählstelle, Stadt und Zahlenwerten eingrenzen.",
-    "",
-    "Kennzahlen werden aus den gefilterten Messungen berechnet – Summe `channels_all` (Fahrten gesamt), Anzahl geladener versus serverseitig gemeldeter Datensätze (`total`), Anzahl unterschiedlicher Zählstellen, Durchschnitt `channels_all` je Messung sowie die aktivste Zählstelle nach summierten `channels_all`; der Datenstand orientiert sich am jüngsten `iso_timestamp`.",
-    "",
-    "Das Diagramm aggregiert `channels_all` je Zählstelle nach Tag; übersteigt der Zeitraum etwa 120 Tage wird nach Woche, über etwa 365 Tage nach Monat gebündelt (Tag/Woche/Monat, maximal sieben Serien, Rest als „Weitere“). Richtungsfelder `channels_in`/`channels_out` werden nicht als Zeitreihe gezeichnet, sondern in der Tabelle je Messung gezeigt.",
-    "",
-    "Die Karte aggregiert Messungen mit gültigen Koordinaten (`latitude`/`longitude`) je Zählstelle und nutzt OpenStreetMap-Kacheln von `tile.openstreetmap.org`; der Ausschnitt passt sich an die vorhandenen Standorte an.",
-    "",
-    "Welche Felder, Zeiträume und wie viele Messungen tatsächlich verfügbar sind und wie aktuell die Quelle gepflegt ist, hängt von der konfigurierten Ressource und deren Feldern (`iso_timestamp`, `counter_site`, `domain_name`, `channels_all`, `channels_in`, `channels_out`, `latitude`, `longitude`) ab; angezeigt werden die in der Quelle vorhandenen Messungen.",
-    "",
-    "## Datenquelle",
-    "",
-    "Die Daten stammen aus MobiData BW und werden über die CKAN-Datastore-API der konfigurierten Ressource bereitgestellt.",
-    "",
-    "- **Open Data Portal:** [MobiData BW](https://mobidata-bw.de)",
-    "- **Datensatz:** [Eco-Counter Fahrradzähler](https://mobidata-bw.de/dataset/eco-counter-fahrradzahler)",
-    "- **Ressource/API-Endpunkt:** [CKAN Datastore API](https://mobidata-bw.de/api/3/action/datastore_search)",
-    "",
-    "Angezeigt werden die in der Ressource vorhandenen Messungen; Verfügbarkeit und Aktualität hängen vom Pflegestand der Quelle ab. Die Karte nutzt OpenStreetMap-Kacheln von `tile.openstreetmap.org`.",
-    "",
-    "## Open Data App",
-    "",
-    "Diese App ist eine Open Data App und kann im [Open Data App Store](https://open-data-app-store.de/) betrieben werden. Sie ist Open Source und lässt sich mit kompatiblen Zähldaten anderer Mobilitätsportale konfigurieren.",
-    "",
-    "- [Open Data App Store](https://open-data-app-store.de/) – die Plattform für Open Data Apps",
-    "- [Alle Open Data Apps auf GitHub](https://github.com/open-data-apps) – die Organisation mit allen Apps",
-    "- [odas-app-fahrrad-zaehlstellen-bw](https://github.com/open-data-apps/odas-app-fahrrad-zaehlstellen-bw) – das Repository dieser App"
-  ],
-  "tags-funktion": [
-    "Datenvisualisierung",
-    "Monitoring",
-    "Kartenansicht",
-    "Zeitreihe",
-    "Filterung"
-  ],
-  "tags-dateityp": [
-    "JSON"
-  ],
-  "tags-datenart": [
-    "Mobilität",
-    "Fahrradverkehr"
-  ],
-  "screenshots": [
-    "assets/Desktop_Screenshot_1.png",
-    "assets/Desktop_Screenshot_2.png",
-    "assets/Desktop_Screenshot_3.png"
-  ],
-  "daten": {
-    "beschreibung": "Die App verarbeitet Datastore-JSON-Ressourcen mit Feldern wie iso_timestamp, counter_site, domain_name, channels_all, channels_in, channels_out, latitude und longitude.",
-    "schema": "assets/schema.json",
-    "beispiel": "Datastore API Antwort mit result.total und result.records",
-    "beispiel-url": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=bbb274af-580d-4228-851e-c8daf32d3c6e&limit=5"
-  },
-  "branding-css": "",
-  "api-version": "1",
-  "instanz-config": {
-    "seitentitel": {
-      "label": "Seitentitel",
-      "category": "allgemein",
-      "hilfe": "Der Seitentitel wird im Browser-Tab der App angezeigt",
-      "default": "Fahrrad-Zählstellen",
-      "format": {
-        "typ": "string",
-        "laenge": 50
-      },
-      "erforderlich": "ja"
-    },
-    "titel": {
-      "label": "Titel",
-      "category": "allgemein",
-      "hilfe": "Der Titel wird in der Titelzeile der App angezeigt",
-      "default": "Fahrrad-Zählstellen",
-      "format": {
-        "typ": "string",
-        "laenge": 50
-      },
-      "erforderlich": "ja"
-    },
-    "icon": {
-      "label": "App-Icon",
-      "category": "allgemein",
-      "hilfe": "Das Icon wird links oben in der Titelzeile angezeigt",
-      "default": "{{{odp.logo}}}",
-      "format": {
-        "typ": "image",
-        "hoehe": 100,
-        "breite": 300
-      },
-      "erforderlich": "ja"
-    },
-    "kontakt": {
-      "label": "Kontakt",
-      "category": "kontakt-rechtliches",
-      "hilfe": "Der Text wird im Menüpunkt 'Kontakt' anzeigt",
-      "format": {
-        "typ": "markdown"
-      },
-      "default": [
-        "_multiline_",
-        "Sie sind zufrieden mit der App oder haben Anregungen, Verbesserungen oder Hinweise, die Sie uns mitteilen möchten?",
-        "",
-        "Dann richten Sie sich gerne an uns. Wir freuen uns über alle Nachrichten. Ihre Nachrichten können Sie uns mitteilen über:",
-        "",
-        "- Tel.: [{{odp.anbieter.tel}}](tel:{{odp.anbieter.tel}})",
-        "- E-Mail: [{{odp.anbieter.email}}](mailto:{{odp.anbieter.email}})"
-      ],
-      "erforderlich": "ja"
-    },
-    "beschreibung": {
-      "label": "Beschreibung",
-      "category": "beschreibung",
-      "hilfe": "Der Text wird im Menüpunkt 'Über diese App' angezeigt",
-      "format": {
-        "typ": "markdown"
-      },
-      "default": [
+    "app-entwickler-id": "12343",
+    "app-entwickler-name": "ondics-gmbh",
+    "name-in-url": "fahrrad-zaehlstellen-bw",
+    "name": "Fahrrad-Zählstellen",
+    "app-version": "1.30.0",
+    "app-package-version": "2",
+    "odas-app-icon": "assets/odas-app-icon.svg",
+    "app-icon": "assets/odas-app-icon.svg",
+    "kurzbeschreibung": "Interaktive Visualisierung der Eco-Counter-Fahrradzähldaten aus MobiData BW – mit KPIs, Karte, Zeitreihen-Chart und durchsuchbarer Tabelle.",
+    "beschreibung": [
         "_multiline_",
         "Die Fahrrad-Zählstellen-App visualisiert Radverkehrsdaten aus automatischen Dauerzählstellen in Baden-Württemberg.",
         "",
@@ -158,8 +33,8 @@
         "Die Daten stammen aus MobiData BW und werden über die CKAN-Datastore-API der konfigurierten Ressource bereitgestellt.",
         "",
         "- **Open Data Portal:** [MobiData BW](https://mobidata-bw.de)",
-        "- **Datensatz:** [Eco-Counter Fahrradzähler](https://mobidata-bw.de/dataset/eco-counter-fahrradzahler)",
-        "- **Ressource/API-Endpunkt:** [CKAN Datastore API](https://mobidata-bw.de/api/3/action/datastore_search)",
+        "- **Datensatz:** [Eco-Counter Fahrradzähler]({{{appinstanz.urlDaten}}})",
+        "- **Ressource/API-Endpunkt:** [CKAN Datastore API]({{{appinstanz.apiurls.1}}})",
         "",
         "Angezeigt werden die in der Ressource vorhandenen Messungen; Verfügbarkeit und Aktualität hängen vom Pflegestand der Quelle ab. Die Karte nutzt OpenStreetMap-Kacheln von `tile.openstreetmap.org`.",
         "",
@@ -170,250 +45,375 @@
         "- [Open Data App Store](https://open-data-app-store.de/) – die Plattform für Open Data Apps",
         "- [Alle Open Data Apps auf GitHub](https://github.com/open-data-apps) – die Organisation mit allen Apps",
         "- [odas-app-fahrrad-zaehlstellen-bw](https://github.com/open-data-apps/odas-app-fahrrad-zaehlstellen-bw) – das Repository dieser App"
-      ],
-      "erforderlich": "ja"
+    ],
+    "tags-funktion": [
+        "Datenvisualisierung",
+        "Monitoring",
+        "Kartenansicht",
+        "Zeitreihe",
+        "Filterung"
+    ],
+    "tags-dateityp": [
+        "JSON"
+    ],
+    "tags-datenart": [
+        "Mobilität",
+        "Fahrradverkehr"
+    ],
+    "screenshots": [
+        "assets/Desktop_Screenshot_1.png",
+        "assets/Desktop_Screenshot_2.png",
+        "assets/Desktop_Screenshot_3.png"
+    ],
+    "daten": {
+        "beschreibung": "Die App verarbeitet Datastore-JSON-Ressourcen mit Feldern wie iso_timestamp, counter_site, domain_name, channels_all, channels_in, channels_out, latitude und longitude.",
+        "schema": "assets/schema.json",
+        "beispiel": "Datastore API Antwort mit result.total und result.records",
+        "beispiel-url": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=bbb274af-580d-4228-851e-c8daf32d3c6e&limit=5"
     },
-    "impressum": {
-      "label": "Impressum",
-      "category": "kontakt-rechtliches",
-      "hilfe": "Der Text wird im Menüpunkt 'Impressum' anzeigt",
-      "format": {
-        "typ": "markdown"
-      },
-      "default": [
-        "_multiline_",
-        "## Anbieter",
-        "",
-        "{{{odp.anbieter.orgName}}}  ",
-        "{{{odp.anbieter.orgUnit}}}",
-        "",
-        "{{odp.anbieter.strasse}}  ",
-        "{{odp.anbieter.plzort}}",
-        "",
-        "Website: [{{odp.anbieter.url}}]({{odp.anbieter.url}})",
-        "",
-        "## Vertretungsberechtigte",
-        "",
-        "{{odp.anbieter.kontakt-bezeichnung}} {{odp.anbieter.name}}",
-        "",
-        "## Kontakt",
-        "",
-        "Tel.: {{odp.anbieter.tel}}  ",
-        "E-Mail: [{{odp.anbieter.email}}](mailto:{{odp.anbieter.email}})",
-        "",
-        "## Registereintrag",
-        "",
-        "Eintragung im Handelsregister. Registergericht und Registernummer sind beim Anbieter zu ergänzen.",
-        "",
-        "## Umsatzsteuer-Identifikationsnummer",
-        "",
-        "USt-IdNr. gemäß § 27a Umsatzsteuergesetz: vom Anbieter zu ergänzen.",
-        "",
-        "## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
-        "",
-        "{{odp.anbieter.name}}, {{odp.anbieter.strasse}}, {{odp.anbieter.plzort}}",
-        "",
-        "## Haftung für Inhalte",
-        "",
-        "Die Inhalte dieser App wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der dargestellten Open-Data-Inhalte wird keine Gewähr übernommen.",
-        "",
-        "## Haftung für Links",
-        "",
-        "Diese App enthält Links zu externen Websites Dritter, auf deren Inhalte kein Einfluss besteht. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter verantwortlich.",
-        "",
-        "## Urheberrecht",
-        "",
-        "Die bereitgestellten Daten unterliegen der angegebenen Open-Data-Lizenz. App-Inhalte und -Gestaltung unterliegen dem Urheberrecht der jeweiligen Rechteinhaber."
-      ],
-      "erforderlich": "ja"
-    },
-    "datenschutz": {
-      "label": "Datenschutz",
-      "category": "kontakt-rechtliches",
-      "hilfe": "Der Text wird im Menüpunkt 'Datenschutz' anzeigt",
-      "format": {
-        "typ": "markdown"
-      },
-      "default": [
-        "_multiline_",
-        "Diese App verarbeitet die angezeigten offenen Daten ausschließlich im Browser. Es werden keine Cookies gesetzt, keine Nutzungsstatistiken erhoben und keine Daten im Browser gespeichert.",
-        "",
-        "Alle für die Darstellung benötigten Programmbibliotheken werden mit der App ausgeliefert. Beim Aufruf werden dafür keine externen Server kontaktiert.",
-        "",
-        "Die angezeigten Daten werden über den ODAS-Proxy geladen. Die Anfrage an die Datenquelle stellt der ODAS-Server; Ihre IP-Adresse wird dorthin nicht übermittelt. Maßgeblich ist der Schalter `proxyAktiv` der Instanz-Konfiguration.",
-        "",
-        "## Beim Aufruf kontaktierte Drittanbieter",
-        "",
-        "Folgende externe Server werden kontaktiert. Dabei werden IP-Adresse und User-Agent der Besucher:innen an diese Anbieter übertragen:",
-        "",
-        "- **tile.openstreetmap.org** — Kartenkacheln (OpenStreetMap)"
-      ],
-      "erforderlich": "ja"
-    },
-    "urlDaten": {
-      "label": "URL zum Datensatz im ODP",
-      "category": "datenherkunft",
-      "hilfe": "Der Datensatz im Open Data Portal mit den Daten der Fahrrad-Zählstellen App",
-      "format": {
-        "typ": "url"
-      },
-      "default": "https://mobidata-bw.de/dataset/eco-counter-fahrradzahler",
-      "beispiel": "https://mobidata-bw.de/dataset/eco-counter-fahrradzahler",
-      "erforderlich": "ja"
-    },
-    "fusszeile": {
-      "label": "Fußzeile",
-      "category": "kontakt-rechtliches",
-      "hilfe": "Wird auf der Website unten in der Fusszeile angezeigt.",
-      "format": {
-        "typ": "string",
-        "laenge": 50
-      },
-      "default": "(C) Copyright {{jahr}} | App & Daten: {{odp.anbieter.name}} | App-Entwickler: {{app.developer.name}} | ODAS: {{odas.betreiber.name}}",
-      "erforderlich": "ja"
-    },
-    "proxyAktiv": {
-      "label": "ODAS-Proxy aktivieren",
-      "category": "datenherkunft",
-      "hilfe": "Mit ja werden Datenabrufe über den ODAS-Proxy gesendet. Die konfigurierte Datenquelle (mobidata-bw.de) sendet keinen CORS-Header, deshalb ist ja hier der Standard. Nur mit einer CORS-freigegebenen Datenquelle kann auf nein umgestellt und die App standalone betrieben werden.",
-      "default": "ja",
-      "format": {
-        "typ": "dropdown",
-        "optionen": [
-          "nein",
-          "ja"
-        ]
-      },
-      "erforderlich": "ja"
-    },
-    "apiurls": {
-      "label": "URLs zu Datenressourcen",
-      "category": "datenherkunft",
-      "hilfe": "Vollständige CKAN DataStore-URL (datastore_search inklusive resource_id) der Fahrradzähler-Ressource. Mehrere Einträge möglich.",
-      "typ": "array",
-      "format": {
-        "typ": "url",
-        "laenge": 500
-      },
-      "urls": [
-        {
-          "name": "zaehlstellen",
-          "label": "Vollständige DataStore-URL",
-          "default": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=bbb274af-580d-4228-851e-c8daf32d3c6e",
-          "beispiel": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=bbb274af-580d-4228-851e-c8daf32d3c6e",
-          "erforderlich": "ja"
+    "branding-css": "",
+    "api-version": "1",
+    "instanz-config": {
+        "seitentitel": {
+            "label": "Seitentitel",
+            "category": "allgemein",
+            "hilfe": "Der Seitentitel wird im Browser-Tab der App angezeigt",
+            "default": "Fahrrad-Zählstellen",
+            "format": {
+                "typ": "string",
+                "laenge": 50
+            },
+            "erforderlich": "ja"
+        },
+        "titel": {
+            "label": "Titel",
+            "category": "allgemein",
+            "hilfe": "Der Titel wird in der Titelzeile der App angezeigt",
+            "default": "Fahrrad-Zählstellen",
+            "format": {
+                "typ": "string",
+                "laenge": 50
+            },
+            "erforderlich": "ja"
+        },
+        "icon": {
+            "label": "App-Icon",
+            "category": "allgemein",
+            "hilfe": "Das Icon wird links oben in der Titelzeile angezeigt",
+            "default": "{{{odp.logo}}}",
+            "format": {
+                "typ": "image",
+                "hoehe": 100,
+                "breite": 300
+            },
+            "erforderlich": "ja"
+        },
+        "kontakt": {
+            "label": "Kontakt",
+            "category": "kontakt-rechtliches",
+            "hilfe": "Der Text wird im Menüpunkt 'Kontakt' anzeigt",
+            "format": {
+                "typ": "markdown"
+            },
+            "default": [
+                "_multiline_",
+                "Sie sind zufrieden mit der App oder haben Anregungen, Verbesserungen oder Hinweise, die Sie uns mitteilen möchten?",
+                "",
+                "Dann richten Sie sich gerne an uns. Wir freuen uns über alle Nachrichten. Ihre Nachrichten können Sie uns mitteilen über:",
+                "",
+                "- Tel.: [{{odp.anbieter.tel}}](tel:{{odp.anbieter.tel}})",
+                "- E-Mail: [{{odp.anbieter.email}}](mailto:{{odp.anbieter.email}})"
+            ],
+            "erforderlich": "ja"
+        },
+        "beschreibung": {
+            "label": "Beschreibung",
+            "category": "beschreibung",
+            "hilfe": "Der Text wird im Menüpunkt 'Über diese App' angezeigt",
+            "format": {
+                "typ": "markdown"
+            },
+            "default": [
+                "_multiline_",
+                "Die Fahrrad-Zählstellen-App visualisiert Radverkehrsdaten aus automatischen Dauerzählstellen in Baden-Württemberg.",
+                "",
+                "Sie macht Zählwerte, Standorte und zeitliche Entwicklungen als Karte, Kennzahlen, Diagramm und Tabelle zugänglich.",
+                "",
+                "## Methodik",
+                "",
+                "Die App ruft die konfigurierte vollständige `datastore_search`-URL (`apiurls.zaehlstellen`, inklusive `resource_id`) ab (`?resource_id=…&limit=…&offset=…&sort=iso_timestamp desc`) und lädt `result.records` paginiert über `limit`/`offset` – im Live-Betrieb über den ODAS-Proxy (`proxyAktiv`), sonst direkt –; optional wird eine Zählstelle als `filters={counter_site}` serverseitig mitgegeben, weitere Filter laufen im Browser.",
+                "",
+                "Zählstelle und Zeitraum (`von`/`bis` auf `iso_timestamp`) werden clientseitig auf die geladenen Messungen angewendet; die Tabelle ist standardmäßig nach `iso_timestamp` absteigend sortiert, alle relevanten Spalten sind sortierbar, und die Anzeige lässt sich über wählbare Seitengröße (10/25/50/100) und eine Schnellsuche über Datum, Zählstelle, Stadt und Zahlenwerten eingrenzen.",
+                "",
+                "Kennzahlen werden aus den gefilterten Messungen berechnet – Summe `channels_all` (Fahrten gesamt), Anzahl geladener versus serverseitig gemeldeter Datensätze (`total`), Anzahl unterschiedlicher Zählstellen, Durchschnitt `channels_all` je Messung sowie die aktivste Zählstelle nach summierten `channels_all`; der Datenstand orientiert sich am jüngsten `iso_timestamp`.",
+                "",
+                "Das Diagramm aggregiert `channels_all` je Zählstelle nach Tag; übersteigt der Zeitraum etwa 120 Tage wird nach Woche, über etwa 365 Tage nach Monat gebündelt (Tag/Woche/Monat, maximal sieben Serien, Rest als „Weitere“). Richtungsfelder `channels_in`/`channels_out` werden nicht als Zeitreihe gezeichnet, sondern in der Tabelle je Messung gezeigt.",
+                "",
+                "Die Karte aggregiert Messungen mit gültigen Koordinaten (`latitude`/`longitude`) je Zählstelle und nutzt OpenStreetMap-Kacheln von `tile.openstreetmap.org`; der Ausschnitt passt sich an die vorhandenen Standorte an.",
+                "",
+                "Welche Felder, Zeiträume und wie viele Messungen tatsächlich verfügbar sind und wie aktuell die Quelle gepflegt ist, hängt von der konfigurierten Ressource und deren Feldern (`iso_timestamp`, `counter_site`, `domain_name`, `channels_all`, `channels_in`, `channels_out`, `latitude`, `longitude`) ab; angezeigt werden die in der Quelle vorhandenen Messungen.",
+                "",
+                "## Datenquelle",
+                "",
+                "Die Daten stammen aus MobiData BW und werden über die CKAN-Datastore-API der konfigurierten Ressource bereitgestellt.",
+                "",
+                "- **Open Data Portal:** [MobiData BW](https://mobidata-bw.de)",
+                "- **Datensatz:** [Eco-Counter Fahrradzähler]({{{appinstanz.urlDaten}}})",
+                "- **Ressource/API-Endpunkt:** [CKAN Datastore API]({{{appinstanz.apiurls.1}}})",
+                "",
+                "Angezeigt werden die in der Ressource vorhandenen Messungen; Verfügbarkeit und Aktualität hängen vom Pflegestand der Quelle ab. Die Karte nutzt OpenStreetMap-Kacheln von `tile.openstreetmap.org`.",
+                "",
+                "## Open Data App",
+                "",
+                "Diese App ist eine Open Data App und kann im [Open Data App Store](https://open-data-app-store.de/) betrieben werden. Sie ist Open Source und lässt sich mit kompatiblen Zähldaten anderer Mobilitätsportale konfigurieren.",
+                "",
+                "- [Open Data App Store](https://open-data-app-store.de/) – die Plattform für Open Data Apps",
+                "- [Alle Open Data Apps auf GitHub](https://github.com/open-data-apps) – die Organisation mit allen Apps",
+                "- [odas-app-fahrrad-zaehlstellen-bw](https://github.com/open-data-apps/odas-app-fahrrad-zaehlstellen-bw) – das Repository dieser App"
+            ],
+            "erforderlich": "ja"
+        },
+        "impressum": {
+            "label": "Impressum",
+            "category": "kontakt-rechtliches",
+            "hilfe": "Der Text wird im Menüpunkt 'Impressum' anzeigt",
+            "format": {
+                "typ": "markdown"
+            },
+            "default": [
+                "_multiline_",
+                "## Anbieter",
+                "",
+                "{{{odp.anbieter.orgName}}}  ",
+                "{{{odp.anbieter.orgUnit}}}",
+                "",
+                "{{odp.anbieter.strasse}}  ",
+                "{{odp.anbieter.plzort}}",
+                "",
+                "Website: [{{odp.anbieter.url}}]({{odp.anbieter.url}})",
+                "",
+                "## Vertretungsberechtigte",
+                "",
+                "{{odp.anbieter.kontakt-bezeichnung}} {{odp.anbieter.name}}",
+                "",
+                "## Kontakt",
+                "",
+                "Tel.: {{odp.anbieter.tel}}  ",
+                "E-Mail: [{{odp.anbieter.email}}](mailto:{{odp.anbieter.email}})",
+                "",
+                "## Registereintrag",
+                "",
+                "Eintragung im Handelsregister. Registergericht und Registernummer sind beim Anbieter zu ergänzen.",
+                "",
+                "## Umsatzsteuer-Identifikationsnummer",
+                "",
+                "USt-IdNr. gemäß § 27a Umsatzsteuergesetz: vom Anbieter zu ergänzen.",
+                "",
+                "## Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
+                "",
+                "{{odp.anbieter.name}}, {{odp.anbieter.strasse}}, {{odp.anbieter.plzort}}",
+                "",
+                "## Haftung für Inhalte",
+                "",
+                "Die Inhalte dieser App wurden mit größtmöglicher Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und Aktualität der dargestellten Open-Data-Inhalte wird keine Gewähr übernommen.",
+                "",
+                "## Haftung für Links",
+                "",
+                "Diese App enthält Links zu externen Websites Dritter, auf deren Inhalte kein Einfluss besteht. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter verantwortlich.",
+                "",
+                "## Urheberrecht",
+                "",
+                "Die bereitgestellten Daten unterliegen der angegebenen Open-Data-Lizenz. App-Inhalte und -Gestaltung unterliegen dem Urheberrecht der jeweiligen Rechteinhaber."
+            ],
+            "erforderlich": "ja"
+        },
+        "datenschutz": {
+            "label": "Datenschutz",
+            "category": "kontakt-rechtliches",
+            "hilfe": "Der Text wird im Menüpunkt 'Datenschutz' anzeigt",
+            "format": {
+                "typ": "markdown"
+            },
+            "default": [
+                "_multiline_",
+                "Diese App verarbeitet die angezeigten offenen Daten ausschließlich im Browser. Es werden keine Cookies gesetzt, keine Nutzungsstatistiken erhoben und keine Daten im Browser gespeichert.",
+                "",
+                "Alle für die Darstellung benötigten Programmbibliotheken werden mit der App ausgeliefert. Beim Aufruf werden dafür keine externen Server kontaktiert.",
+                "",
+                "Die angezeigten Daten werden über den ODAS-Proxy geladen. Die Anfrage an die Datenquelle stellt der ODAS-Server; Ihre IP-Adresse wird dorthin nicht übermittelt. Maßgeblich ist der Schalter `proxyAktiv` der Instanz-Konfiguration.",
+                "",
+                "## Beim Aufruf kontaktierte Drittanbieter",
+                "",
+                "Folgende externe Server werden kontaktiert. Dabei werden IP-Adresse und User-Agent der Besucher:innen an diese Anbieter übertragen:",
+                "",
+                "- **tile.openstreetmap.org** — Kartenkacheln (OpenStreetMap)"
+            ],
+            "erforderlich": "ja"
+        },
+        "urlDaten": {
+            "label": "URL zum Datensatz im ODP",
+            "category": "datenherkunft",
+            "hilfe": "Der Datensatz im Open Data Portal mit den Daten der Fahrrad-Zählstellen App",
+            "format": {
+                "typ": "url"
+            },
+            "default": "https://mobidata-bw.de/dataset/eco-counter-fahrradzahler",
+            "beispiel": "https://mobidata-bw.de/dataset/eco-counter-fahrradzahler",
+            "erforderlich": "ja"
+        },
+        "fusszeile": {
+            "label": "Fußzeile",
+            "category": "kontakt-rechtliches",
+            "hilfe": "Wird auf der Website unten in der Fusszeile angezeigt.",
+            "format": {
+                "typ": "string",
+                "laenge": 50
+            },
+            "default": "(C) Copyright {{jahr}} | App & Daten: {{odp.anbieter.name}} | App-Entwickler: {{app.developer.name}} | ODAS: {{odas.betreiber.name}}",
+            "erforderlich": "ja"
+        },
+        "proxyAktiv": {
+            "label": "ODAS-Proxy aktivieren",
+            "category": "datenherkunft",
+            "hilfe": "Mit ja werden Datenabrufe über den ODAS-Proxy gesendet. Die konfigurierte Datenquelle (mobidata-bw.de) sendet keinen CORS-Header, deshalb ist ja hier der Standard. Nur mit einer CORS-freigegebenen Datenquelle kann auf nein umgestellt und die App standalone betrieben werden.",
+            "default": "ja",
+            "format": {
+                "typ": "dropdown",
+                "optionen": [
+                    "nein",
+                    "ja"
+                ]
+            },
+            "erforderlich": "ja"
+        },
+        "apiurls": {
+            "label": "URLs zu Datenressourcen",
+            "category": "datenherkunft",
+            "hilfe": "Vollständige CKAN DataStore-URL (datastore_search inklusive resource_id) der Fahrradzähler-Ressource. Mehrere Einträge möglich.",
+            "typ": "array",
+            "format": {
+                "typ": "url",
+                "laenge": 500
+            },
+            "urls": [
+                {
+                    "name": "zaehlstellen",
+                    "label": "Vollständige DataStore-URL",
+                    "default": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=bbb274af-580d-4228-851e-c8daf32d3c6e",
+                    "beispiel": "https://mobidata-bw.de/api/3/action/datastore_search?resource_id=bbb274af-580d-4228-851e-c8daf32d3c6e",
+                    "erforderlich": "ja"
+                }
+            ]
+        },
+        "kpiKontext1": {
+            "label": "KPI-Kontext 1 (Fahrten gesamt)",
+            "category": "beschreibung",
+            "hilfe": "Optionaler Erklärtext unter der ersten KPI-Kachel. Leer = kein Kontext.",
+            "format": {
+                "typ": "string",
+                "laenge": 220
+            },
+            "default": "Summe aller geladenen Messwerte – abhängig von Filter und Ladegrenze.",
+            "erforderlich": "nein"
+        },
+        "kpiKontext2": {
+            "label": "KPI-Kontext 2 (Aktivste Zählstelle)",
+            "category": "beschreibung",
+            "hilfe": "Optionaler Erklärtext unter der zweiten KPI-Kachel. Leer = kein Kontext.",
+            "format": {
+                "typ": "string",
+                "laenge": 220
+            },
+            "default": "Zählstelle mit den meisten erfassten Fahrten im geladenen Zeitraum.",
+            "erforderlich": "nein"
+        },
+        "kpiKontext3": {
+            "label": "KPI-Kontext 3 (Ø Fahrten / Messung)",
+            "category": "beschreibung",
+            "hilfe": "Optionaler Erklärtext unter der dritten KPI-Kachel. Leer = kein Kontext.",
+            "format": {
+                "typ": "string",
+                "laenge": 220
+            },
+            "default": "Durchschnittliche Fahrten pro Messzeitpunkt über alle geladenen Zählstellen.",
+            "erforderlich": "nein"
+        },
+        "kpiKontext4": {
+            "label": "KPI-Kontext 4 (Datensätze gesamt)",
+            "category": "beschreibung",
+            "hilfe": "Optionaler Erklärtext unter der vierten KPI-Kachel. Leer = kein Kontext.",
+            "format": {
+                "typ": "string",
+                "laenge": 220
+            },
+            "default": "Gesamtzahl der im Datensatz verfügbaren Messungen (serverseitig gemeldet).",
+            "erforderlich": "nein"
+        },
+        "datenquelleHinweis": {
+            "label": "Methodik / Datenquelle-Hinweis",
+            "category": "beschreibung",
+            "hilfe": "Herkunft, Erhebungsmethode, Limitierungen (Markdown/HTML). Leer = ausgeblendet.",
+            "format": {
+                "typ": "markdown"
+            },
+            "default": "Die Daten stammen aus automatischen Eco-Counter-Dauerzählstellen für den Radverkehr und werden über MobiData BW als offene Daten bereitgestellt. Angezeigt werden Messwerte der konfigurierten Ressource; kurzfristige Ausfälle, Wartungen oder Nachlieferungen können die Zeitreihen beeinflussen.",
+            "erforderlich": "nein"
+        },
+        "datenStand": {
+            "label": "Datenstand",
+            "category": "beschreibung",
+            "hilfe": "Freitext-Datum, z.B. 'Stand: Januar 2025'. Leer = ausgeblendet.",
+            "format": {
+                "typ": "string",
+                "laenge": 60
+            },
+            "default": "Stand: Live-Abruf aus MobiData BW",
+            "erforderlich": "nein"
+        },
+        "weiterfuehrendeLinks": {
+            "label": "Weiterführende Links",
+            "category": "beschreibung",
+            "hilfe": "Verwandte Datensätze / Hintergrundquellen (Markdown/HTML). Leer = nur abgeleitete Quell-Links.",
+            "format": {
+                "typ": "markdown"
+            },
+            "default": "- [MobiData BW](https://mobidata-bw.de/)\n- [Eco-Counter Fahrradzähler](https://mobidata-bw.de/dataset/eco-counter-fahrradzahler)\n- [Aktivmobil BW](https://www.aktivmobil-bw.de/)",
+            "erforderlich": "nein"
+        },
+        "sprache": {
+            "label": "Sprache der App",
+            "category": "allgemein",
+            "hilfe": "Angabe der App-Sprache",
+            "default": "de",
+            "format": {
+                "typ": "dropdown",
+                "optionen": [
+                    "de"
+                ]
+            },
+            "erforderlich": "ja"
+        },
+        "brandingCSS": {
+            "label": "Zusätzliches Branding-CSS",
+            "category": "sonstiges",
+            "hilfe": "Optionaler CSS-Code für die konkrete App-Instanz.",
+            "default": "",
+            "format": {
+                "typ": "string",
+                "laenge": 10000
+            },
+            "erforderlich": "nein"
+        },
+        "brandingCSSFile": {
+            "label": "Branding-CSS-Datei",
+            "category": "sonstiges",
+            "hilfe": "Optionale URL zu einer zusätzlichen CSS-Datei für die konkrete App-Instanz.",
+            "default": "",
+            "format": {
+                "typ": "url",
+                "laenge": 500
+            },
+            "erforderlich": "nein"
         }
-      ]
-    },
-    "kpiKontext1": {
-      "label": "KPI-Kontext 1 (Fahrten gesamt)",
-      "category": "beschreibung",
-      "hilfe": "Optionaler Erklärtext unter der ersten KPI-Kachel. Leer = kein Kontext.",
-      "format": {
-        "typ": "string",
-        "laenge": 220
-      },
-      "default": "Summe aller geladenen Messwerte – abhängig von Filter und Ladegrenze.",
-      "erforderlich": "nein"
-    },
-    "kpiKontext2": {
-      "label": "KPI-Kontext 2 (Aktivste Zählstelle)",
-      "category": "beschreibung",
-      "hilfe": "Optionaler Erklärtext unter der zweiten KPI-Kachel. Leer = kein Kontext.",
-      "format": {
-        "typ": "string",
-        "laenge": 220
-      },
-      "default": "Zählstelle mit den meisten erfassten Fahrten im geladenen Zeitraum.",
-      "erforderlich": "nein"
-    },
-    "kpiKontext3": {
-      "label": "KPI-Kontext 3 (Ø Fahrten / Messung)",
-      "category": "beschreibung",
-      "hilfe": "Optionaler Erklärtext unter der dritten KPI-Kachel. Leer = kein Kontext.",
-      "format": {
-        "typ": "string",
-        "laenge": 220
-      },
-      "default": "Durchschnittliche Fahrten pro Messzeitpunkt über alle geladenen Zählstellen.",
-      "erforderlich": "nein"
-    },
-    "kpiKontext4": {
-      "label": "KPI-Kontext 4 (Datensätze gesamt)",
-      "category": "beschreibung",
-      "hilfe": "Optionaler Erklärtext unter der vierten KPI-Kachel. Leer = kein Kontext.",
-      "format": {
-        "typ": "string",
-        "laenge": 220
-      },
-      "default": "Gesamtzahl der im Datensatz verfügbaren Messungen (serverseitig gemeldet).",
-      "erforderlich": "nein"
-    },
-    "datenquelleHinweis": {
-      "label": "Methodik / Datenquelle-Hinweis",
-      "category": "beschreibung",
-      "hilfe": "Herkunft, Erhebungsmethode, Limitierungen (Markdown/HTML). Leer = ausgeblendet.",
-      "format": {
-        "typ": "markdown"
-      },
-      "default": "Die Daten stammen aus automatischen Eco-Counter-Dauerzählstellen für den Radverkehr und werden über MobiData BW als offene Daten bereitgestellt. Angezeigt werden Messwerte der konfigurierten Ressource; kurzfristige Ausfälle, Wartungen oder Nachlieferungen können die Zeitreihen beeinflussen.",
-      "erforderlich": "nein"
-    },
-    "datenStand": {
-      "label": "Datenstand",
-      "category": "beschreibung",
-      "hilfe": "Freitext-Datum, z.B. 'Stand: Januar 2025'. Leer = ausgeblendet.",
-      "format": {
-        "typ": "string",
-        "laenge": 60
-      },
-      "default": "Stand: Live-Abruf aus MobiData BW",
-      "erforderlich": "nein"
-    },
-    "weiterfuehrendeLinks": {
-      "label": "Weiterführende Links",
-      "category": "beschreibung",
-      "hilfe": "Verwandte Datensätze / Hintergrundquellen (Markdown/HTML). Leer = nur abgeleitete Quell-Links.",
-      "format": {
-        "typ": "markdown"
-      },
-      "default": "- [MobiData BW](https://mobidata-bw.de/)\n- [Eco-Counter Fahrradzähler](https://mobidata-bw.de/dataset/eco-counter-fahrradzahler)\n- [Aktivmobil BW](https://www.aktivmobil-bw.de/)",
-      "erforderlich": "nein"
-    },
-    "sprache": {
-      "label": "Sprache der App",
-      "category": "allgemein",
-      "hilfe": "Angabe der App-Sprache",
-      "default": "de",
-      "format": {
-        "typ": "dropdown",
-        "optionen": [
-          "de"
-        ]
-      },
-      "erforderlich": "ja"
-    },
-    "brandingCSS": {
-      "label": "Zusätzliches Branding-CSS",
-      "category": "sonstiges",
-      "hilfe": "Optionaler CSS-Code für die konkrete App-Instanz.",
-      "default": "",
-      "format": {
-        "typ": "string",
-        "laenge": 10000
-      },
-      "erforderlich": "nein"
-    },
-    "brandingCSSFile": {
-      "label": "Branding-CSS-Datei",
-      "category": "sonstiges",
-      "hilfe": "Optionale URL zu einer zusätzlichen CSS-Datei für die konkrete App-Instanz.",
-      "default": "",
-      "format": {
-        "typ": "url",
-        "laenge": 500
-      },
-      "erforderlich": "nein"
     }
-  }
 }
