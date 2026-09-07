@@ -5,11 +5,12 @@
   "fields": [
     {
       "name": "iso_timestamp",
-      "type": "string",
+      "type": "datetime",
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Messzeitpunkt"
     },
     {
       "name": "counter_site",
@@ -17,7 +18,8 @@
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Zählstelle"
     },
     {
       "name": "domain_name",
@@ -25,47 +27,53 @@
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Gebiet"
     },
     {
       "name": "channels_all",
-      "type": "string",
+      "type": "integer",
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Zählungen gesamt"
     },
     {
       "name": "channels_in",
-      "type": "string",
+      "type": "integer",
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Zählungen eingehend"
     },
     {
       "name": "channels_out",
-      "type": "string",
+      "type": "integer",
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Zählungen ausgehend"
     },
     {
       "name": "latitude",
-      "type": "string",
+      "type": "number",
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Breitengrad"
     },
     {
       "name": "longitude",
-      "type": "string",
+      "type": "number",
       "description": "Wird in der App verwendet",
       "constraints": {
         "required": true
-      }
+      },
+      "title": "Längengrad"
     }
   ]
 }
