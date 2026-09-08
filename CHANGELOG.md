@@ -1,7 +1,7 @@
 # Changelog
 
 ## 1.30.1 - 2026-09-07
-- **FIX:** Doppeltes Query-Trennzeichen (F-105, Live-Fund): buildUrl und Stations-Loader hängten `?resource_id=…` auch an URLs an, die bereits `?resource_id=…` enthalten (Paket-Default) → Quelle antwortete 404 → ODAS-Proxy 500. Query-Trennzeichen jetzt zustandsabhängig (`?`/`&`). Regressionsszenario (g) im Lifecycle-Harness (1.30.2 -> 1.30.3).
+- **FIX:** Doppelte Query-Parameter (F-105, Live-Fund, 2. Anlauf): Query-Parameter werden per URL-API gesetzt statt angehängt — auch ein doppelter `resource_id` (gleicher Wert) führt bei MobiDataBW zu 404. buildUrl und Stations-Loader hängten `?resource_id=…` auch an URLs an, die bereits `?resource_id=…` enthalten (Paket-Default) → Quelle antwortete 404 → ODAS-Proxy 500. Query-Trennzeichen jetzt zustandsabhängig (`?`/`&`). Regressionsszenario (g) im Lifecycle-Harness (1.30.2 -> 1.30.3).
 - **FIX:** Variante-A-Verdrahtung (F-92): Typprüfung (ckan-dkan-ds) vor dem ersten Fetch; Quellen-/Ressourcen- und Ladefehler über `renderOdasFehler`. (1.30.1 -> 1.30.2)
 - **FIX:** Frictionless-Härtung: Schema-Titel ergänzt, Typen gegen Live-Antwort korrigiert (`integer`/`number`/`datetime` statt `string`); 08-25-Migration verifiziert (kein `resourceid`-Key, ID-Parsing aus URL). datastore-Default bleibt (4B-Ausnahme).
 

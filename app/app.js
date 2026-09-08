@@ -857,9 +857,16 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       params.set("filters", JSON.stringify({ counter_site: station }));
     }
     // F-105: Die konfigurierte URL enthaelt bereits ?resource_id=... (Paket-
-    // Default) — Query grundsaetzlich mit & anhaengen, sonst entsteht ein
-    // doppeltes ? und die Quelle antwortet 404.
-    return `${API}${API.includes("?") ? "&" : "?"}${params.toString()}`;
+    // Default). Query-Parameter per URL-API setzen statt anhaengen — sonst
+    // entsteht ein doppeltes ? bzw. ein doppelter resource_id-Parameter, und
+    // die Quelle antwortet 404.
+    try {
+      const u = new URL(API);
+      for (const [k, v] of params) u.searchParams.set(k, v);
+      return u.toString();
+    } catch (_e) {
+      return `${API}${API.includes("?") ? "&" : "?"}${params.toString()}`;
+    }
   }
 
   // ── Clientseitige Filterung (Zählstelle + Datum) ────────────────────────
@@ -1048,9 +1055,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         offset: String(offset),
         fields: "counter_site,domain_name",
       });
-      // F-105: siehe buildUrl — Query mit & anhaengen (Paket-Default enthaelt
-      // bereits ?resource_id=...).
-      const url = `${API}${API.includes("?") ? "&" : "?"}${params.toString()}`;
+      // F-105: siehe buildUrl — Parameter setzen statt anhaengen.
+      let url;
+      try {
+        const u = new URL(API);
+        for (const [k, v] of params) u.searchParams.set(k, v);
+        url = u.toString();
+      } catch (_e) {
+        url = `${API}${API.includes("?") ? "&" : "?"}${params.toString()}`;
+      }
       let batchResult = null;
       try {
         const json = await fetchOdasJson(url, configdata);
