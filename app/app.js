@@ -856,7 +856,10 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     if (station) {
       params.set("filters", JSON.stringify({ counter_site: station }));
     }
-    return `${API}?${params.toString()}`;
+    // F-105: Die konfigurierte URL enthaelt bereits ?resource_id=... (Paket-
+    // Default) — Query grundsaetzlich mit & anhaengen, sonst entsteht ein
+    // doppeltes ? und die Quelle antwortet 404.
+    return `${API}${API.includes("?") ? "&" : "?"}${params.toString()}`;
   }
 
   // ── Clientseitige Filterung (Zählstelle + Datum) ────────────────────────
@@ -1045,7 +1048,9 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         offset: String(offset),
         fields: "counter_site,domain_name",
       });
-      const url = `${API}?${params.toString()}`;
+      // F-105: siehe buildUrl — Query mit & anhaengen (Paket-Default enthaelt
+      // bereits ?resource_id=...).
+      const url = `${API}${API.includes("?") ? "&" : "?"}${params.toString()}`;
       let batchResult = null;
       try {
         const json = await fetchOdasJson(url, configdata);
