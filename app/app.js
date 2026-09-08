@@ -329,8 +329,16 @@ function onPageLeave(page) {
 function app(configdata = {}, enclosingHtmlDivElement) {
   const quelle = getOdasApiUrl(configdata, "zaehlstellen");
   if (!quelle || /^\{\{.*\}\}$/.test(quelle) || /^<.*>$/.test(quelle)) {
-    enclosingHtmlDivElement.innerHTML =
-      '<div class="alert alert-info" role="alert">Es ist keine Datenquelle konfiguriert.</div>';
+    renderOdasFehler(
+      enclosingHtmlDivElement,
+      new Error("Keine Datenquelle konfiguriert."),
+      {
+        url: quelle,
+        label: "Zählstellen-API",
+        typLabel: "Tabellen-API mit Daten-ID",
+        erwarteterTyp: "ckan-dkan-ds",
+      },
+    );
     return null;
   }
 
@@ -341,8 +349,30 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   if (!RES) {
     // Eine Quelle = eine vollständige URL: Ohne resource_id im Query ist die
     // konfigurierte datastore_search-URL unvollständig.
-    enclosingHtmlDivElement.innerHTML =
-      '<div class="alert alert-info" role="alert">Die konfigurierte DataStore-URL enthält keine resource_id. Bitte eine vollständige datastore_search-URL eintragen.</div>';
+    renderOdasFehler(
+      enclosingHtmlDivElement,
+      new Error(
+        "Die konfigurierte DataStore-URL enthält keine resource_id. Bitte eine vollständige datastore_search-URL eintragen.",
+      ),
+      {
+        url: API,
+        label: "Zählstellen-API",
+        typLabel: "Tabellen-API mit Daten-ID",
+        erwarteterTyp: "ckan-dkan-ds",
+      },
+    );
+    return null;
+  }
+
+  // Variante A (F-92): Typprüfung vor dem ersten Fetch.
+  const fzTypWarn = validateUrlTypErwartung(API, "ckan-dkan-ds");
+  if (fzTypWarn) {
+    renderOdasFehler(enclosingHtmlDivElement, new Error(fzTypWarn), {
+      url: API,
+      label: "Zählstellen-API",
+      typLabel: "Tabellen-API mit Daten-ID",
+      erwarteterTyp: "ckan-dkan-ds",
+    });
     return null;
   }
   const PAGE = 1000;
@@ -982,13 +1012,20 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     if (activeLoadController === controller && loadId === activeLoadId) {
       setLoadCancelVisible(false);
       setLoadStatus("Fehler beim Laden der Datensätze", true);
-      root.querySelector(`#fz-table-body-${fzUid}`).innerHTML = `
-        <tr><td colspan="6">
-          <div class="fz-error">
-            ⚠️ Fehler beim Laden der Daten:<br>
-            <small>${allErrors.join(" | ")}</small>
-          </div>
-        </td></tr>`;
+      const fzTbody = root.querySelector(`#fz-table-body-${fzUid}`);
+      if (fzTbody) {
+        fzTbody.innerHTML = `<tr><td colspan="6"><div class="fz-error-slot"></div></td></tr>`;
+        renderOdasFehler(
+          fzTbody.querySelector(".fz-error-slot"),
+          new Error(allErrors.join(" | ") || "Datenabruf fehlgeschlagen."),
+          {
+            url: API,
+            label: "Zählstellen-API",
+            typLabel: "Tabellen-API mit Daten-ID",
+            erwarteterTyp: "ckan-dkan-ds",
+          },
+        );
+      }
     }
     return null;
   }

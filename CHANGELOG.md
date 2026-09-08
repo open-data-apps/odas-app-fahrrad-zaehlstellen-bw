@@ -1,6 +1,7 @@
 # Changelog
 
 ## 1.30.1 - 2026-09-07
+- **FIX:** Variante-A-Verdrahtung (F-92): Typprüfung (ckan-dkan-ds) vor dem ersten Fetch; Quellen-/Ressourcen- und Ladefehler über `renderOdasFehler`. (1.30.1 -> 1.30.2)
 - **FIX:** Frictionless-Härtung: Schema-Titel ergänzt, Typen gegen Live-Antwort korrigiert (`integer`/`number`/`datetime` statt `string`); 08-25-Migration verifiziert (kein `resourceid`-Key, ID-Parsing aus URL). datastore-Default bleibt (4B-Ausnahme).
 
 ## 1.30.0 - 2026-08-25
