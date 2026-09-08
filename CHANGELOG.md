@@ -3,8 +3,13 @@
 ## 1.30.4 - 2026-09-08
 - **FIX:** Query-Parameter setzen statt anhängen (F-105, 2. Anlauf): auch ein doppelter `resource_id` (gleicher Wert) führt bei MobiDataBW zu 404 → ODAS-Proxy 500. buildUrl und Stations-Loader setzen Parameter jetzt per URL-API (1.30.3 -> 1.30.4).
 
-## 1.30.1 - 2026-09-07
+## 1.30.3 - 2026-09-08
+- **FIX:** Doppeltes Query-Trennzeichen (F-105, Live-Fund): buildUrl und Stations-Loader hängten `?resource_id=…` auch an URLs an, die bereits `?resource_id=…` enthalten (Paket-Default) → Quelle antwortete 404 → ODAS-Proxy 500 (1.30.2 -> 1.30.3).
+
+## 1.30.2 - 2026-09-08
 - **FIX:** Variante-A-Verdrahtung (F-92): Typprüfung (ckan-dkan-ds) vor dem ersten Fetch; Quellen-/Ressourcen- und Ladefehler über `renderOdasFehler`. (1.30.1 -> 1.30.2)
+
+## 1.30.1 - 2026-09-07
 - **FIX:** Frictionless-Härtung: Schema-Titel ergänzt, Typen gegen Live-Antwort korrigiert (`integer`/`number`/`datetime` statt `string`); 08-25-Migration verifiziert (kein `resourceid`-Key, ID-Parsing aus URL). datastore-Default bleibt (4B-Ausnahme).
 
 ## 1.30.0 - 2026-08-25
