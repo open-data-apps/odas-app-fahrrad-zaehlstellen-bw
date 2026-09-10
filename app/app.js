@@ -275,16 +275,6 @@ function renderOdasFehler(container, error, kontext = {}) {
   container.innerHTML = `<div class="alert ${alertClass}" role="alert"><strong>${escapeHtml(titel)}</strong><p class="mb-1">${escapeHtml(info.hinweis)}</p>${urlZeile}<details class="small"><summary>Details</summary><code>${escapeHtml(info.detail || String(error))}</code></details></div>`;
 }
 
-function isLeerErgebnis(json) {
-  if (!json) return true;
-  if (Array.isArray(json) && json.length === 0) return true;
-  if (Array.isArray(json.records) && json.records.length === 0) return true;
-  if (Array.isArray(json.results) && json.results.length === 0) return true;
-  if (json.result && Array.isArray(json.result.records) && json.result.records.length === 0) return true;
-  return false;
-}
-
-
 function escapeHtml(str) {
   return String(str == null ? "" : str)
     .replace(/&/g, "&amp;")
@@ -380,165 +370,6 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   const DEFAULT_TABLE_PAGE_SIZE = 10;
   const root = enclosingHtmlDivElement;
 
-  // ── Styles injizieren ────────────────────────────────────────────────────
-  const STYLE_ID = "fz-app-inline-style";
-  let styleEl = document.getElementById(STYLE_ID);
-  if (!styleEl) {
-    styleEl = document.createElement("style");
-    styleEl.id = STYLE_ID;
-    styleEl.textContent = `
-    .fz-app { font-family: system-ui, sans-serif; background: #f4f6fb; min-height: 100vh; }
-    .fz-header { background: linear-gradient(135deg, #1a56db 0%, #0e3a8c 100%);
-      color: #fff; padding: 1.5rem 2rem; border-radius: 0 0 1.5rem 1.5rem; margin-bottom: 1.5rem; }
-    .fz-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; letter-spacing: -.5px; }
-    .fz-header p  { margin: .25rem 0 0; opacity: .8; font-size: .875rem; }
-    .fz-header a { color: #dbeafe; text-decoration: underline; }
-    .fz-header a:hover { color: #fff; }
-    .fz-kpi { background: #fff; border-radius: 1rem; padding: 1.1rem 1rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,.07); text-align: center; height: 100%; }
-    .fz-kpi .val { font-size: 1.8rem; font-weight: 800; color: #1a56db; line-height: 1.1; }
-    .fz-kpi .val.green  { color: #0d9488; }
-    .fz-kpi .val.orange { color: #d97706; }
-    .fz-kpi .val.purple { color: #7c3aed; }
-    .fz-kpi .lbl { font-size: .78rem; color: #6b7280; margin-top: .3rem; font-weight: 500; }
-    .fz-kpi .sub { font-size: .7rem; color: #9ca3af; margin-top: .15rem; }
-    .fz-card { background: #fff; border-radius: 1rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden; }
-    .fz-card-header { padding: .85rem 1.25rem; border-bottom: 1px solid #f3f4f6;
-      font-weight: 700; font-size: .95rem; color: #111827;
-      display: flex; align-items: center; justify-content: space-between; }
-    .fz-card-header .badge { font-size: .7rem; font-weight: 600;
-      background: #eff6ff; color: #1a56db; padding: .25rem .6rem; border-radius: 999px; }
-    .fz-filter-bar { background: #fff; border-radius: 1rem;
-      box-shadow: 0 2px 12px rgba(0,0,0,.07); padding: 1rem 1.25rem; }
-    .fz-map { height: 460px; width: 100%; }
-    .fz-map-wrap:fullscreen { background: #fff; padding: .75rem; }
-    .fz-map-wrap:fullscreen .fz-map { height: calc(100vh - 1.5rem); }
-    .fz-map-wrap:-webkit-full-screen { background: #fff; padding: .75rem; }
-    .fz-map-wrap:-webkit-full-screen .fz-map { height: calc(100vh - 1.5rem); }
-    .fz-chart-wrap:fullscreen { background: #fff; padding: 1rem; }
-    .fz-chart-wrap:fullscreen .fz-chart { height: calc(100vh - 7rem) !important; max-height: none !important; }
-    .fz-chart-wrap:-webkit-full-screen { background: #fff; padding: 1rem; }
-    .fz-chart-wrap:-webkit-full-screen .fz-chart { height: calc(100vh - 7rem) !important; max-height: none !important; }
-    .fz-map-tools { display: flex; align-items: center; gap: .5rem; }
-    .fz-chart-tools { display: flex; align-items: center; gap: .5rem; }
-    .fz-chart-fullscreen-btn { font-size: .72rem; line-height: 1.2; }
-    .fz-map-fullscreen-control {
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.15);
-      background: #fff;
-    }
-    .fz-map-fullscreen-control button {
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      margin: 0;
-      border: 0;
-      line-height: 1;
-      background: #fff;
-      color: #0f172a;
-      cursor: pointer;
-    }
-    .fz-map-fullscreen-control button:hover { background: #f1f5f9; }
-    .fz-map-fullscreen-control button:focus {
-      outline: 2px solid #2563eb;
-      outline-offset: -2px;
-    }
-    .fz-table-wrap { max-height: none; overflow: visible; }
-    .fz-table thead th { background: #1e293b; color: #fff; font-size: .8rem;
-      font-weight: 600; padding: .6rem .75rem; border: none; white-space: nowrap; }
-    .fz-table thead th { position: sticky; top: 0; z-index: 2; }
-    .fz-map-fullscreen-control button svg {
-      width: 16px;
-      height: 16px;
-      display: block;
-      margin: 0;
-      fill: currentColor;
-      pointer-events: none;
-    }
-    .fz-table tbody tr:hover { background: #eff6ff !important; }
-    .fz-table tbody td { font-size: .82rem; padding: .55rem .75rem;
-      border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
-    .fz-table-search-wrap {
-      padding: .7rem 1.25rem .6rem;
-      border-bottom: 1px solid #f3f4f6;
-      background: linear-gradient(180deg, #ffffff 0%, #fcfdff 100%);
-    }
-    .fz-table-search-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: .75rem;
-      flex-wrap: wrap;
-    }
-    .fz-table-search-label {
-      margin: 0;
-      font-size: .78rem;
-      font-weight: 600;
-      color: #64748b;
-      white-space: nowrap;
-    }
-    .fz-table-search-input-wrap {
-      position: relative;
-      flex: 1 1 280px;
-      max-width: 460px;
-    }
-    .fz-table-search-input-wrap svg {
-      position: absolute;
-      left: .62rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 14px;
-      height: 14px;
-      color: #94a3b8;
-      pointer-events: none;
-    }
-    .fz-table-search {
-      height: 32px;
-      padding-left: 1.9rem;
-      border-color: #d6deeb;
-      font-size: .82rem;
-    }
-    .fz-table-search:focus {
-      border-color: #60a5fa;
-      box-shadow: 0 0 0 .14rem rgba(59, 130, 246, .14);
-    }
-    .fz-badge-city { display: inline-block; background: #f0fdf4; color: #065f46;
-      border-radius: 999px; padding: .15rem .6rem; font-size: .72rem; font-weight: 600; }
-    .fz-pagination { display: flex; align-items: center;
-      justify-content: space-between; padding: .75rem 1.25rem;
-      border-top: 1px solid #f3f4f6; background: #fafafa; }
-    .fz-pagination-left,
-    .fz-pagination-right { display: flex; align-items: center; gap: .5rem; }
-    .fz-page-size-label { font-size: .78rem; color: #6b7280; white-space: nowrap; }
-    .fz-load-row { display: flex; align-items: center; gap: .5rem; min-height: 1.4rem; }
-    .fz-load-status { font-size: .73rem; color: #6b7280; min-height: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .fz-load-status.error { color: #b91c1c; }
-    .fz-load-cancel { padding: .1rem .45rem; font-size: .72rem; line-height: 1.2; }
-    .fz-spinner { display: flex; align-items: center; justify-content: center;
-      padding: 3rem; gap: .75rem; color: #6b7280; font-size: .9rem; }
-    .fz-empty { text-align: center; padding: 3rem; color: #9ca3af; font-size: .9rem; }
-    .fz-error  { text-align: center; padding: 2rem; color: #dc2626; font-size: .85rem; }
-    .fz-sort-btn { cursor: pointer; user-select: none; }
-    .fz-sort-btn:hover { color: #93c5fd; }
-    .fz-sort-ind { font-size: .72rem; opacity: .9; margin-left: .15rem; }
-    .leaflet-popup-content b { color: #1a56db; }
-    @media (max-width: 768px) {
-      .fz-map { height: 300px; }
-      .fz-table-wrap { max-height: none; overflow: visible; }
-      .fz-table-search-input-wrap { max-width: none; }
-      .fz-kpi .val { font-size: 1.4rem; }
-      .fz-header { padding: 1rem; }
-      .fz-pagination { flex-wrap: wrap; gap: .5rem; }
-    }
-  `;
-    document.head.appendChild(styleEl);
-  }
 
   const kk = (n) => {
     const t = String(configdata["kpiKontext" + n] || "").trim();
@@ -645,6 +476,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         </div>
       </div>
 
+      <div id="fz-hinweis-${fzUid}" class="mb-3"></div>
+
       <!-- Karte -->
       <div class="fz-card mb-4">
         <div class="fz-card-header">
@@ -672,11 +505,25 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         </div>
       </div>
 
+      <!-- Wochentagsprofil (bewusst ohne Chart.js: kein zweiter Chart-Lifecycle) -->
+      <div class="fz-card mb-4">
+        <div class="fz-card-header">
+          <span>📅 Wochentagsprofil</span>
+          <span class="badge" id="fz-weekday-badge-${fzUid}">–</span>
+        </div>
+        <div class="p-3">
+          <div id="fz-weekday-${fzUid}" class="fz-weekday"></div>
+        </div>
+      </div>
+
       <!-- Tabelle -->
       <div class="fz-card mb-4">
         <div class="fz-card-header">
           <span>📋 Messdaten</span>
-          <span class="badge" id="fz-table-info-${fzUid}">–</span>
+          <div class="fz-table-tools">
+            <button id="fz-btn-export-${fzUid}" type="button" class="btn btn-outline-secondary btn-sm" title="Gefilterte Messdaten als CSV laden">CSV-Export</button>
+            <span class="badge" id="fz-table-info-${fzUid}">–</span>
+          </div>
         </div>
         <div class="fz-table-search-wrap">
           <div class="fz-table-search-row">
@@ -751,6 +598,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   let chartFullscreenBtnEl = null;
   let activeLoadController = null;
   let activeLoadId = 0; // F-44: monotone Lauf-ID – nur der aktuellste Lauf schreibt State/UI
+  let stationsController = null; // FZ-B3: Stationslader ist abbrechbar
   let isLoadCancelled = false;
 
   // ── Hilfsfunktionen ───────────────────────────────────────────────────────
@@ -759,15 +607,15 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
   function formatDate(ts) {
     if (!ts) return "–";
-    try {
-      return new Date(ts).toLocaleDateString("de-DE", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "2-digit",
-      });
-    } catch (e) {
-      return ts.substring(0, 10);
-    }
+    // FZ-B5: new Date() wirft nie — ohne getTime()-Prüfung stand hier
+    // „Invalid Date" statt des Rohwerts.
+    const d = new Date(ts);
+    if (Number.isNaN(d.getTime())) return String(ts).substring(0, 10);
+    return d.toLocaleDateString("de-DE", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
   }
 
   function setLoadStatus(text, isError = false) {
@@ -1041,7 +889,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   // ── Alle Zählstellen laden (für Dropdown) ────────────────────────────────
-  async function loadAllStations() {
+  async function loadAllStations(signal) {
     const stationMap = new Map();
     let offset = 0;
     let total = Number.POSITIVE_INFINITY;
@@ -1049,6 +897,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
     while (offset < total && safetyCounter < 400) {
       safetyCounter += 1;
+      // FZ-B3: nach Seitenwechsel/boolscher Abmeldung sofort aussteigen.
+      if (signal && signal.aborted) break;
       const params = new URLSearchParams({
         resource_id: RES,
         limit: String(PAGE_STATION),
@@ -1066,11 +916,13 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       }
       let batchResult = null;
       try {
-        const json = await fetchOdasJson(url, configdata);
+        const json = await fetchOdasJson(url, configdata, { signal });
         if (json.success) batchResult = json.result;
       } catch (e) {
         /* weiter */
       }
+
+      if (signal && signal.aborted) break;
 
       if (!batchResult) break;
       const batchRecords = Array.isArray(batchResult.records)
@@ -1134,15 +986,22 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   async function populateStationFilter() {
     if (stationsLoaded || stationsLoading) return;
     stationsLoading = true;
+    // FZ-B3: eigener Controller — der Teardown bricht den Lauf ab, statt bis
+    // zu 400 Seitenladungen im Hintergrund weiterzufuehren.
+    const controller = new AbortController();
+    stationsController = controller;
     try {
-      const records = await loadAllStations();
+      const records = await loadAllStations(controller.signal);
+      if (controller.signal.aborted) return;
       if (records.length > 0) {
         appendStationOptions(records);
         stationsLoaded = true;
         // Sicherstellen, dass beim Initialisieren kein alter Browserwert aktiv bleibt.
-        root.querySelector(`#fz-filter-station-${fzUid}`).value = "";
+        const sel = root.querySelector(`#fz-filter-station-${fzUid}`);
+        if (sel) sel.value = "";
       }
     } finally {
+      if (stationsController === controller) stationsController = null;
       stationsLoading = false;
     }
   }
@@ -1237,6 +1096,81 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
 
 
+  // FZ-B2: Der Datumsfilter wirkt nur auf die geladenen Datensätze. Reicht das
+  // Fenster nicht bis „Von" zurück, darf die App keine leere Tabelle zeigen,
+  // als gäbe es keine Daten — sondern benennt die Ursache.
+  function renderRangeHint() {
+    const hint = root.querySelector(`#fz-hinweis-${fzUid}`);
+    if (!hint) return;
+    hint.innerHTML = "";
+    const from = root.querySelector(`#fz-filter-from-${fzUid}`).value;
+    const limitEl = root.querySelector(`#fz-load-limit-${fzUid}`);
+    if (!from || limitEl.value === "all") return;
+    if (allRecords.length === 0) return;
+    // Ist der gesamte Datensatz geladen, ist der Datumsfilter exakt — dann
+    // wäre der Hinweis ein Fehlalarm (z. B. Quelle ohne ältere Messungen).
+    if (totalRecords > 0 && allRecords.length >= totalRecords) return;
+
+    const aeltester = allRecords.reduce((min, r) => {
+      const day = String(r.iso_timestamp || "").substring(0, 10);
+      if (!day) return min;
+      return !min || day < min ? day : min;
+    }, "");
+    if (!aeltester || from >= aeltester) return;
+
+    hint.innerHTML =
+      '<div class="alert alert-warning py-2 px-3 mb-0" role="alert">' +
+      "Der gewählte Zeitraum beginnt vor den geladenen Daten (" +
+      escapeHtml(formatDate(aeltester)) +
+      "). Der Datumsfilter wirkt nur auf die " +
+      escapeHtml(formatNum(allRecords.length)) +
+      " geladenen Datensätze — bitte „Zu ladende Datensätze“ erhöhen oder „Alle“ wählen." +
+      "</div>";
+  }
+
+  // Wochentagsprofil: Summe der Fahrten je Wochentag als Balkenliste. Bewusst
+  // ohne Chart.js — kein zweiter Chart-Lifecycle, funktioniert auch ohne die
+  // Bibliothek, und der Lifecycle-Check bleibt bei genau einem Chart.
+  function renderWeekdayProfile(records) {
+    const wrap = root.querySelector(`#fz-weekday-${fzUid}`);
+    const badge = root.querySelector(`#fz-weekday-badge-${fzUid}`);
+    if (!wrap) return;
+    const namen = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    const lang = [
+      "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag",
+    ];
+    const summen = new Array(7).fill(0);
+    let mitDatum = 0;
+    records.forEach((r) => {
+      if (!r.iso_timestamp) return;
+      const d = new Date(r.iso_timestamp);
+      if (Number.isNaN(d.getTime())) return;
+      summen[(d.getDay() + 6) % 7] += Number(r.channels_all) || 0;
+      mitDatum += 1;
+    });
+    if (mitDatum === 0) {
+      wrap.innerHTML = '<div class="fz-empty">Keine Daten für ein Wochentagsprofil.</div>';
+      if (badge) badge.textContent = "–";
+      return;
+    }
+    const max = Math.max(...summen, 1);
+    wrap.innerHTML = summen
+      .map((val, i) => {
+        const pct = Math.round((val / max) * 100);
+        return (
+          '<div class="fz-weekday-row">' +
+          '<span class="fz-weekday-label">' + namen[i] + "</span>" +
+          '<div class="fz-weekday-track" title="' + lang[i] + ': ' + escapeHtml(formatNum(val)) + ' Fahrten">' +
+          '<div class="fz-weekday-bar" style="width:' + pct + '%"></div>' +
+          "</div>" +
+          '<span class="fz-weekday-val">' + escapeHtml(formatNum(val)) + "</span>" +
+          "</div>"
+        );
+      })
+      .join("");
+    if (badge) badge.textContent = escapeHtml(formatNum(mitDatum)) + " Messungen";
+  }
+
   function renderDatenfrische(records) {
     const el = root.querySelector(`#fz-datenfrische-${fzUid}`);
     if (!el) return;
@@ -1307,7 +1241,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     const linkItems = sourceLinks
       .map(
         ([label, url]) =>
-          '<li><a href="' + escapeHtml(url) + '" target="_blank" rel="noopener">' +
+          '<li><a href="' + escapeHtml(safeHttpUrl(url)) + '" target="_blank" rel="noopener">' +
           escapeHtml(label) + "</a></li>",
       )
       .join("");
@@ -1666,6 +1600,8 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
     renderTablePage();
     renderKPIs(filteredRecords, totalRecords);
+    renderRangeHint();
+    renderWeekdayProfile(filteredRecords);
 
     refreshSortIndicators();
     loadChartJs(() => {
@@ -1753,15 +1689,27 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     leafletMap.addControl(new FullscreenControl());
   }
 
-  // ── Bibliotheken dynamisch laden ──────────────────────────────────────────
+  // ── Bibliotheksladen (dedupliziert, mit Fehlerpfad) ───────────────────────
+  // FZ-B4: vorher ohne Script-id und ohne onerror — ein fehlendes Vendor-File
+  // liess die App stumm (Karte/Chart erschienen einfach nie).
   function loadChartJs(cb) {
     if (window.Chart) {
       cb();
       return;
     }
+    const fehler = () =>
+      setLoadStatus("Chart.js konnte nicht geladen werden", true);
+    const vorhanden = document.getElementById("fz-chartjs-script");
+    if (vorhanden) {
+      vorhanden.addEventListener("load", cb);
+      vorhanden.addEventListener("error", fehler);
+      return;
+    }
     const s = document.createElement("script");
+    s.id = "fz-chartjs-script";
     s.src = "vendor/chartjs/chart.umd.min.js";
     s.onload = cb;
+    s.onerror = fehler;
     document.head.appendChild(s);
   }
 
@@ -1770,13 +1718,25 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       cb();
       return;
     }
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "vendor/leaflet/leaflet.css";
-    document.head.appendChild(link);
+    if (!document.getElementById("fz-leaflet-css")) {
+      const link = document.createElement("link");
+      link.id = "fz-leaflet-css";
+      link.rel = "stylesheet";
+      link.href = "vendor/leaflet/leaflet.css";
+      document.head.appendChild(link);
+    }
+    const fehler = () => setLoadStatus("Leaflet konnte nicht geladen werden", true);
+    const vorhanden = document.getElementById("fz-leaflet-script");
+    if (vorhanden) {
+      vorhanden.addEventListener("load", cb);
+      vorhanden.addEventListener("error", fehler);
+      return;
+    }
     const s = document.createElement("script");
+    s.id = "fz-leaflet-script";
     s.src = "vendor/leaflet/leaflet.js";
     s.onload = cb;
+    s.onerror = fehler;
     document.head.appendChild(s);
   }
 
@@ -1831,6 +1791,46 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     renderTablePage();
   });
 
+  // CSV-Export der aktuell gefilterten Messdaten (nicht nur der Tabellenseite).
+  root.querySelector(`#fz-btn-export-${fzUid}`).addEventListener("click", () => {
+    if (filteredRecords.length === 0) {
+      setLoadStatus("Keine Daten zum Exportieren", true);
+      return;
+    }
+    const esc = (v) => {
+      const s = String(v ?? "");
+      return /[";\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+    const zeilen = [
+      "Datum;Zaehlstelle;Stadt;Gesamt;Einwaerts;Auswaerts",
+    ];
+    filteredRecords.forEach((r) => {
+      zeilen.push(
+        [
+          r.iso_timestamp ? String(r.iso_timestamp).substring(0, 10) : "",
+          r.counter_site || "",
+          r.domain_name || "",
+          r.channels_all ?? "",
+          r.channels_in ?? "",
+          r.channels_out ?? "",
+        ]
+          .map(esc)
+          .join(";"),
+      );
+    });
+    const blob = new Blob(["\uFEFF" + zeilen.join("\r\n")], {
+      type: "text/csv;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "fahrradzaehlstellen-export.csv";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
   root
     .querySelector(`#fz-btn-chart-fullscreen-${fzUid}`)
     .addEventListener("click", toggleChartFullscreen);
@@ -1875,10 +1875,20 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   // Ladevorgang ab (Token-/Controller-Mechanik aus F-44), entfernt die
   // Fullscreen-Listener und gibt Chart (destroy) sowie Leaflet-Karte (remove)
   // genau einmal frei.
+  // FZ-B1: Vorgänger-Instanz desselben Containers zuerst abräumen — sonst
+  // leaken bei Same-Page-Re-Render Chart, Karte und Fullscreen-Listener.
+  const fzVorherigerCleanup = fahrradInstances.get(enclosingHtmlDivElement);
+  if (fzVorherigerCleanup) {
+    try {
+      fzVorherigerCleanup();
+    } catch (_e) {}
+  }
   fahrradInstances.set(enclosingHtmlDivElement, () => {
     isLoadCancelled = true;
     activeLoadId += 1; // F-44: Lauf-Token invalidieren – späte Fortsetzungen sind wirkungslos
     if (activeLoadController) activeLoadController.abort();
+    // FZ-B3: laufenden Stationslader ebenfalls abbrechen.
+    if (stationsController) stationsController.abort();
     fullscreenListeners.forEach(([type, fn]) => {
       document.removeEventListener(type, fn);
     });
@@ -1911,5 +1921,5 @@ function app(configdata = {}, enclosingHtmlDivElement) {
 
 // AUSSERHALB von app() – PFLICHT
 function addToHead() {
-  return;
+  return ``;
 }

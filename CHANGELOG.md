@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.30.5 - 2026-09-10
+- **FIX:** Same-Page-Re-Render räumt Vorgänger-Instanz ab (FZ-B1): Chart, Karte und Fullscreen-Listener leaken nicht mehr.
+- **FIX:** Datumsfilter täuscht keine leere Tabelle mehr vor (FZ-B2): reicht das geladene Fenster nicht bis „Von“ zurück, weist ein Hinweis darauf hin; ist der ganze Datensatz geladen, entfällt er.
+- **FIX:** Stationslader ist abbrechbar und schreibt nach Seitenwechsel nicht mehr (FZ-B3, eigener AbortController im Teardown).
+- **FIX:** Bibliothekslader mit Script-ID und Fehlerpfad (FZ-B4) — fehlendes Vendor-File erscheint jetzt als Meldung statt stumm zu bleiben; `formatDate` zeigt bei ungültigem Zeitstempel den Rohwert statt „Invalid Date“ (FZ-B5).
+- **TECH:** 150 Zeilen app-spezifisches CSS aus `app.js` nach `app/app.css` verschoben (portfolioweit die einzige App mit inline-`<style>`); `isLeerErgebnis` entfernt, `addToHead` gibt `""` zurück, dynamische Quell-Links laufen über `safeHttpUrl` (FZ-B6).
+- **FEATURE:** CSV-Export der gefilterten Messdaten (BOM); Wochentagsprofil (Fahrten je Wochentag) bewusst ohne Chart.js — kein zweiter Chart-Lifecycle.
+
 ## 1.30.4 - 2026-09-08
 - **FIX:** Query-Parameter setzen statt anhängen (F-105, 2. Anlauf): auch ein doppelter `resource_id` (gleicher Wert) führt bei MobiDataBW zu 404 → ODAS-Proxy 500. buildUrl und Stations-Loader setzen Parameter jetzt per URL-API (1.30.3 -> 1.30.4).
 

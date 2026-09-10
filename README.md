@@ -16,10 +16,12 @@ Die App entspricht der [Open Data App-Spezifikation](https://open-data-apps.gith
 Single Page Application mit Fokus auf performanter Analyse und einfacher Bedienung:
 
 - **Kennzahlen (KPIs)**: Fahrten gesamt, aktivste Zählstelle, Durchschnitt je Messung, Datensätze gesamt — mit konfigurierbaren Kontexttexten für bessere Verständlichkeit
-- **Filterung**: nach Zählstelle (mit Ortsangabe) und Zeitraum (von/bis), auch nur mit Zählstelle nutzbar
+- **Filterung**: nach Zählstelle (mit Ortsangabe) und Zeitraum (von/bis), auch nur mit Zählstelle nutzbar; reicht das geladene Fenster nicht bis zum gewählten „Von" zurück, wird das ausdrücklich gemeldet statt eine leere Tabelle zu zeigen
 - **Ladesteuerung**: Auswahl der zu ladenden Datensätze (100 bis 10000 oder `Alle`), Fortschrittsanzeige und Abbrechen-Button
 - **Kartenansicht**: Leaflet-Karte mit aggregierten Zählstellenpunkten, Popups und Vollbild-Button als Karten-Control
 - **Fahrten-Verlauf**: Chart.js-Zeitreihe mit Vollbildmodus, adaptiver Aggregation (Tag/Woche/Monat), Serienbündelung für große Datenmengen und Decimation
+- **Wochentagsprofil**: Fahrten je Wochentag als Balkenübersicht (ohne zusätzliche Bibliothek)
+- **CSV-Export**: gefilterte Messdaten als Excel-kompatible CSV
 - **Messdaten-Tabelle**: Sortierung auf allen relevanten Spalten, clientseitige Pagination ohne Neuladen von Karte/Chart, Einträge-pro-Seite-Auswahl (10/25/50/100)
 - **Schale 4 – Verständlichkeit**: Datenfrische-Anzeige (basierend auf neuestem Messwert), ausklappbare Methodikbox mit Datenquellen-Hinweis, automatisch abgeleitete Quell-Links (Portal/Datensatz/Ressource), optionaler Zusatz-Link-Bereich
 - **Robuster Datenabruf**: CKAN-Requests über ODAS-Proxy mit Fallback-Strategie und Batch-Ladevorgängen
