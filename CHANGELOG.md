@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.30.9 - 2026-10-13
+- PERF: R2-006: Tabellensuche bildet den Suchtext je Datensatz nur einmal; Suche bei 1.000 Messungen ca. 115 → 25 ms, bei 5.000 ca. 470 → 20 ms. Gesuchte Werte und Anzeige unverändert.
+
 ## 1.30.8 - 2026-10-08
 - FIX: F-143: Wiederholte Seiten vor dem Anhängen erkennen; Fahrten nicht doppelt summieren und Teilbestand im Ladestatus benennen.
 

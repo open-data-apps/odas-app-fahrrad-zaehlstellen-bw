@@ -736,13 +736,14 @@ function app(configdata = {}, enclosingHtmlDivElement) {
   }
 
   // ── Tabellen-Suche (nur Tabelle, nicht KPI/Chart/Karte) ────────────────
-  function applyTableSearch(records) {
-    const input = root.querySelector(`#fz-filter-search-${fzUid}`);
-    const query = (input?.value || "").trim().toLowerCase();
-    if (!query) return records;
-
-    return records.filter((r) => {
-      const values = [
+  // R2-006: Suchtext je Datensatz nur einmal bilden; die Datums-/Zahlenformatierung
+  // aller Datensätze bei jeder Eingabe dominierte die Suchzeit. Neue Ladevorgänge
+  // liefern neue Datensatzobjekte und damit automatisch neue Einträge.
+  const suchtextCache = new WeakMap();
+  function suchtext(r) {
+    let text = suchtextCache.get(r);
+    if (text === undefined) {
+      text = [
         formatDate(r.iso_timestamp),
         r.counter_site || "",
         r.domain_name || "",
@@ -752,9 +753,18 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         String(r.channels_all ?? ""),
         String(r.channels_in ?? ""),
         String(r.channels_out ?? ""),
-      ];
-      return values.join(" ").toLowerCase().includes(query);
-    });
+      ].join(" ").toLowerCase();
+      suchtextCache.set(r, text);
+    }
+    return text;
+  }
+
+  function applyTableSearch(records) {
+    const input = root.querySelector(`#fz-filter-search-${fzUid}`);
+    const query = (input?.value || "").trim().toLowerCase();
+    if (!query) return records;
+
+    return records.filter((r) => suchtext(r).includes(query));
   }
 
   // ── Datenabruf: direkt oder ueber den ODAS-Proxy (proxyAktiv) ─────────────
