@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.30.8 - 2026-10-08
+- FIX: F-143: Wiederholte Seiten vor dem Anhängen erkennen; Fahrten nicht doppelt summieren und Teilbestand im Ladestatus benennen.
+
+## 1.30.7 - 2026-10-02
+- ENH: Verwendete ODAS-Dienste in `odas-services` deklariert.
+
+## 1.30.6 - 2026-09-29
+
+- **FIX:** Audit F-151: Eine erreichbare Quelle ohne Datensätze wurde als „Fehler beim Laden der Datensätze" gemeldet. Leere Antworten werden jetzt als Leerzustand („Keine Datensätze in der Datenquelle.") ausgegeben; echte Abruffehler bleiben getrennt sichtbar (Browser nachgewiesen).
+- **FIX:** F-151 (Nachbesserung): Eine Antwort ohne `result.records`-Liste gilt als Formatfehler, nicht als leere Quelle.
+
 ## 1.30.5 - 2026-09-10
 - **FIX:** Same-Page-Re-Render räumt Vorgänger-Instanz ab (FZ-B1): Chart, Karte und Fullscreen-Listener leaken nicht mehr.
 - **FIX:** Datumsfilter täuscht keine leere Tabelle mehr vor (FZ-B2): reicht das geladene Fenster nicht bis „Von“ zurück, weist ein Hinweis darauf hin; ist der ganze Datensatz geladen, entfällt er.

@@ -783,7 +783,9 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     let currentOffset = offset;
     let total = 0;
     const allErrors = [];
+    const seenPageKeys = new Set();
     let safetyCounter = 0;
+    let quelleErreichbar = false; // F-151: Leere Quelle != Abruffehler
 
     isLoadCancelled = false;
     setLoadCancelVisible(true);
@@ -824,11 +826,24 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         allErrors.push(...errors);
         break;
       }
+      // F-151: Ohne result.records-Liste ist die Antwort ein Formatfehler, kein leerer Bestand.
+      if (!Array.isArray(result.records)) {
+        allErrors.push("Unbekanntes Antwortformat: result.records fehlt.");
+        break;
+      }
+      quelleErreichbar = true;
 
       total = Number(result.total) || total;
-      const batchRecords = Array.isArray(result.records) ? result.records : [];
+      const batchRecords = result.records;
       if (batchRecords.length === 0) break;
 
+      // F-143: Gleiche Messungen auf einer Folgeseite dürfen die Fahrten nicht verdoppeln.
+      const pageKey = JSON.stringify(batchRecords.map(record => record._id ?? record.id ?? record.objectid ?? JSON.stringify(record)).sort());
+      if (seenPageKeys.has(pageKey)) {
+        allErrors.push("Die Quelle wiederholt eine Seite.");
+        break;
+      }
+      seenPageKeys.add(pageKey);
       records.push(...batchRecords);
       currentOffset += batchRecords.length;
 
@@ -853,11 +868,13 @@ function app(configdata = {}, enclosingHtmlDivElement) {
         setLoadCancelVisible(false);
         if (total > 0) {
           setLoadStatus(
-            `Geladen: ${formatNum(finalRecords.length)} von ${formatNum(total)} Datensätzen`,
+            `Geladen: ${formatNum(finalRecords.length)} von ${formatNum(total)} Datensätzen` +
+              (allErrors.length ? " · Teilbestand: " + allErrors.join(" ") : ""),
           );
         } else {
           setLoadStatus(
-            `Geladen: ${formatNum(finalRecords.length)} Datensätze`,
+            `Geladen: ${formatNum(finalRecords.length)} Datensätze` +
+              (allErrors.length ? " · Teilbestand: " + allErrors.join(" ") : ""),
           );
         }
       }
@@ -867,25 +884,32 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       };
     }
 
+    // F-151: Eine erreichbare Quelle ohne Datensätze ist ein Leerzustand,
+    // kein Datenabruffehler — zuvor erschien „Fehler beim Laden“.
+    const quelleLeerOk = quelleErreichbar && allErrors.length === 0;
     if (activeLoadController === controller && loadId === activeLoadId) {
       setLoadCancelVisible(false);
-      setLoadStatus("Fehler beim Laden der Datensätze", true);
-      const fzTbody = root.querySelector(`#fz-table-body-${fzUid}`);
-      if (fzTbody) {
-        fzTbody.innerHTML = `<tr><td colspan="6"><div class="fz-error-slot"></div></td></tr>`;
-        renderOdasFehler(
-          fzTbody.querySelector(".fz-error-slot"),
-          new Error(allErrors.join(" | ") || "Datenabruf fehlgeschlagen."),
-          {
-            url: API,
-            label: "Zählstellen-API",
-            typLabel: "Tabellen-API mit Daten-ID",
-            erwarteterTyp: "ckan-dkan-ds",
-          },
-        );
+      if (quelleLeerOk) {
+        setLoadStatus("Keine Datensätze in der Datenquelle.");
+      } else {
+        setLoadStatus("Fehler beim Laden der Datensätze", true);
+        const fzTbody = root.querySelector(`#fz-table-body-${fzUid}`);
+        if (fzTbody) {
+          fzTbody.innerHTML = `<tr><td colspan="6"><div class="fz-error-slot"></div></td></tr>`;
+          renderOdasFehler(
+            fzTbody.querySelector(".fz-error-slot"),
+            new Error(allErrors.join(" | ") || "Datenabruf fehlgeschlagen."),
+            {
+              url: API,
+              label: "Zählstellen-API",
+              typLabel: "Tabellen-API mit Daten-ID",
+              erwarteterTyp: "ckan-dkan-ds",
+            },
+          );
+        }
       }
     }
-    return null;
+    return quelleLeerOk ? { total: 0, records: [] } : null;
   }
 
   // ── Alle Zählstellen laden (für Dropdown) ────────────────────────────────
