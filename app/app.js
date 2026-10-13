@@ -793,7 +793,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     let currentOffset = offset;
     let total = 0;
     const allErrors = [];
-    const seenPageKeys = new Set();
+    const seenRecordKeys = new Set();
     let safetyCounter = 0;
     let quelleErreichbar = false; // F-151: Leere Quelle != Abruffehler
 
@@ -847,14 +847,19 @@ function app(configdata = {}, enclosingHtmlDivElement) {
       const batchRecords = result.records;
       if (batchRecords.length === 0) break;
 
-      // F-143: Gleiche Messungen auf einer Folgeseite dürfen die Fahrten nicht verdoppeln.
-      const pageKey = JSON.stringify(batchRecords.map(record => record._id ?? record.id ?? record.objectid ?? JSON.stringify(record)).sort());
-      if (seenPageKeys.has(pageKey)) {
+      // F-143: Gleiche Messungen dürfen die Fahrten nicht verdoppeln – auch bei
+      // überlappenden Folgeseiten; daher je Datensatz statt je ganzer Seite prüfen.
+      const neueRecords = batchRecords.filter((record) => {
+        const key = record._id ?? record.id ?? record.objectid ?? JSON.stringify(record);
+        if (seenRecordKeys.has(key)) return false;
+        seenRecordKeys.add(key);
+        return true;
+      });
+      if (neueRecords.length === 0) {
         allErrors.push("Die Quelle wiederholt eine Seite.");
         break;
       }
-      seenPageKeys.add(pageKey);
-      records.push(...batchRecords);
+      records.push(...neueRecords);
       currentOffset += batchRecords.length;
 
       if (activeLoadController === controller && loadId === activeLoadId) {
