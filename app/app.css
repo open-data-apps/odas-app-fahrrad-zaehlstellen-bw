@@ -214,4 +214,4 @@
   font-variant-numeric: tabular-nums;
 }
 .fz-table-tools { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
-.fz-table-tools .btn { white-space: nowrap; }
+.fz-table-tools .btn, .fz-table-tools .badge { white-space: nowrap; }
