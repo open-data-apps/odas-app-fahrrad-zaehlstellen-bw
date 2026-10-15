@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.30.13 - 2026-10-15
+- FIX: M6: Die Auswahl „Zu ladende Datensätze“ steht standardmäßig auf „Alle“ (bisher 1000), sodass Tabellenzähler und Kennzahlen den gesamten Bestand zeigen. Auf schmalen Bildschirmen bricht die Kopfzeile der Messdaten-Tabelle um, das Badge „… von … geladenen Einträgen“ wird nicht mehr abgeschnitten und „CSV-Export“ bleibt einzeilig.
+
 ## 1.30.12 - 2026-10-15
 - DOCS: Neue Store-Screenshots: je drei Desktop- (1440 × 1000) und Mobile-Aufnahmen (390 × 844) der aktuellen App, aufgenommen auf der Dev-Instanz. Bisherige Bilder nach `docs/screenshots/archive/2026-10-13/` verschoben, Bildverweis im README angepasst. Keine Änderung an App-Code oder Konfiguration.
 

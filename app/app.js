@@ -464,11 +464,11 @@ function app(configdata = {}, enclosingHtmlDivElement) {
               <option value="100">100</option>
               <option value="250">250</option>
               <option value="500">500</option>
-              <option value="1000" selected>1000</option>
+              <option value="1000">1000</option>
               <option value="2000">2000</option>
               <option value="5000">5000</option>
               <option value="10000">10000</option>
-              <option value="all">Alle</option>
+              <option value="all" selected>Alle</option>
             </select>
           </div>
           <div class="col-6 col-md-2 d-flex gap-2">

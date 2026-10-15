@@ -52,7 +52,8 @@
   box-shadow: 0 2px 12px rgba(0,0,0,.07); overflow: hidden; }
 .fz-card-header { padding: .85rem 1.25rem; border-bottom: 1px solid #f3f4f6;
   font-weight: 700; font-size: .95rem; color: #111827;
-  display: flex; align-items: center; justify-content: space-between; }
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: .5rem; }
 .fz-card-header .badge { font-size: .7rem; font-weight: 600;
   background: #eff6ff; color: #1a56db; padding: .25rem .6rem; border-radius: 999px; }
 .fz-filter-bar { background: #fff; border-radius: 1rem;
@@ -212,4 +213,5 @@
   color: #334155;
   font-variant-numeric: tabular-nums;
 }
-.fz-table-tools { display: flex; align-items: center; gap: .5rem; }
+.fz-table-tools { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.fz-table-tools .btn { white-space: nowrap; }
