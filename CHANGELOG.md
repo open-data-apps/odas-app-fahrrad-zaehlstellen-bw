@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.30.14 - 2026-10-15
+- FIX: Kopfzeile bei 360 px ohne Überlauf (Template): Logo- und Burger-Spalte passen sich der Breite an, das Menü-Symbol ragt nicht mehr über den rechten Rand. Keine Änderung an App-Code oder Konfiguration.
+
 ## 1.30.13 - 2026-10-15
 - FIX: Die Auswahl „Zu ladende Datensätze“ steht standardmäßig auf „Alle“ (bisher 1000), sodass Tabellenzähler und Kennzahlen den gesamten Bestand zeigen. Auf schmalen Bildschirmen bricht die Kopfzeile der Messdaten-Tabelle um, das Badge „… von … geladenen Einträgen“ wird nicht mehr abgeschnitten und „CSV-Export“ bleibt einzeilig.
 
