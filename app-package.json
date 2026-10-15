@@ -3,7 +3,7 @@
   "app-entwickler-name": "ondics-gmbh",
   "name-in-url": "fahrrad-zaehlstellen-bw",
   "name": "Fahrrad-Zählstellen",
-  "app-version": "1.30.11",
+  "app-version": "1.30.12",
   "app-package-version": "2",
   "odas-app-icon": "assets/odas-app-icon.svg",
   "app-icon": "assets/odas-app-icon.svg",
@@ -61,9 +61,12 @@
     "Fahrradverkehr"
   ],
   "screenshots": [
-    "assets/Desktop_Screenshot_1.png",
+    "assets/Desktop_Screenshot.png",
     "assets/Desktop_Screenshot_2.png",
-    "assets/Desktop_Screenshot_3.png"
+    "assets/Desktop_Screenshot_3.png",
+    "assets/Mobile_Screenshot.png",
+    "assets/Mobile_Screenshot_2.png",
+    "assets/Mobile_Screenshot_3.png"
   ],
   "daten": {
     "beschreibung": "Die App verarbeitet Datastore-JSON-Ressourcen mit Feldern wie iso_timestamp, counter_site, domain_name, channels_all, channels_in, channels_out, latitude und longitude.",

@@ -7,7 +7,7 @@ Die App entspricht der [Open Data App-Spezifikation](https://open-data-apps.gith
 
 ## Funktionen
 
-![Desktop Screenshot 1](assets/Desktop_Screenshot_1.png)
+![Desktop Screenshot 1](assets/Desktop_Screenshot.png)
 
 ![Desktop Screenshot 2](assets/Desktop_Screenshot_2.png)
 
