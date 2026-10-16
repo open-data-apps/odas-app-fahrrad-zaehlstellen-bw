@@ -44,7 +44,7 @@
       "type": "integer",
       "description": "Wird in der App verwendet",
       "constraints": {
-        "required": true
+        "required": false
       },
       "title": "Zählungen eingehend"
     },
@@ -53,7 +53,7 @@
       "type": "integer",
       "description": "Wird in der App verwendet",
       "constraints": {
-        "required": true
+        "required": false
       },
       "title": "Zählungen ausgehend"
     },

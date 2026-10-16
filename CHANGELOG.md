@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.30.15 - 2026-10-16
+- FIX: Schema: `channels_in` und `channels_out` nicht mehr als Pflichtwerte, weil die Quelle sie teils leer liefert; die Store-Datenprüfung meldete sonst Fehler.
+
 ## 1.30.14 - 2026-10-15
 - FIX: Kopfzeile bei 360 px ohne Überlauf (Template): Logo- und Burger-Spalte passen sich der Breite an, das Menü-Symbol ragt nicht mehr über den rechten Rand. Keine Änderung an App-Code oder Konfiguration.
 
