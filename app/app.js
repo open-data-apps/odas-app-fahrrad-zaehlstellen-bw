@@ -115,6 +115,17 @@ function fzResourceIdFromApiUrl(apiUrl) {
   }
 }
 
+// Live-Befund 27.10.2026: „Von“ nach „Bis“ ergab kommentarlos eine leere Tabelle.
+function fzZeitraumUmgekehrt(from, to) {
+  return Boolean(from && to && from > to);
+}
+
+// Live-Befund 27.10.2026: Eine leere Tabelle zeigte „1-0“.
+function fzSeitenInfo(page, pages, start, end, total) {
+  const zahl = (n) => Number(n).toLocaleString("de-DE");
+  return `Seite ${page} von ${pages} · ${total === 0 ? "0" : zahl(start + 1)}-${zahl(end)}`;
+}
+
 async function fetchOdasJson(targetUrl, configdata = {}, options = {}) {
   const rawContent = await fetchOdasResource(targetUrl, configdata, options);
   try {
@@ -1095,7 +1106,7 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     if (tableWrap) tableWrap.scrollTop = 0;
 
     root.querySelector(`#fz-page-info-${fzUid}`).textContent =
-      `Seite ${tablePage} von ${pages} · ${formatNum(start + 1)}-${formatNum(end)}`;
+      fzSeitenInfo(tablePage, pages, start, end, total);
     root.querySelector(`#fz-btn-prev-${fzUid}`).disabled = tablePage <= 1;
     root.querySelector(`#fz-btn-next-${fzUid}`).disabled = tablePage >= pages;
 
@@ -1153,6 +1164,12 @@ function app(configdata = {}, enclosingHtmlDivElement) {
     if (!hint) return;
     hint.innerHTML = "";
     const from = root.querySelector(`#fz-filter-from-${fzUid}`).value;
+    const to = root.querySelector(`#fz-filter-to-${fzUid}`).value;
+    if (fzZeitraumUmgekehrt(from, to)) {
+      hint.innerHTML =
+        '<div class="alert alert-warning py-2 px-3 mb-0" role="alert">„Von“ liegt nach „Bis“ – bitte den Zeitraum korrigieren.</div>';
+      return;
+    }
     const limitEl = root.querySelector(`#fz-load-limit-${fzUid}`);
     if (!from || limitEl.value === "all") return;
     if (allRecords.length === 0) return;

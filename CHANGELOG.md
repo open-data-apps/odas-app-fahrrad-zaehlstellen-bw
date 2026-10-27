@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.30.16 - 2026-10-27
+- FIX: Liegt „Von“ nach „Bis“, erscheint der Hinweis „„Von“ liegt nach „Bis“ – bitte den Zeitraum korrigieren.“ statt einer kommentarlos leeren Tabelle (Live-Befund 27.10.2026).
+- FIX: Eine leere Messdatentabelle zeigt „Seite 1 von 1 · 0-0“ statt „1-0“.
+- DOCS: Store-Katalogtext ohne Instanz-Platzhalter: Links mit Platzhalterziel erscheinen dort als Text, weil die Katalogseite keine Instanz kennt und Platzhalter nicht auflöst (Live-Befund 27.10.2026). „Über diese App“ in der App bleibt unverändert.
+
 ## 1.30.15 - 2026-10-16
 - FIX: Schema: `channels_in` und `channels_out` nicht mehr als Pflichtwerte, weil die Quelle sie teils leer liefert; die Store-Datenprüfung meldete sonst Fehler.
 
