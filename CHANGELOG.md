@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.30.17 - 2026-11-03
+- DOCS: MIT-Lizenz ergänzt: `LICENSE` liegt im Repository und im Lieferpaket (`make zip`), das README hat einen Abschnitt „Lizenz“. Keine Änderung an App-Code oder Konfiguration.
+
 ## 1.30.16 - 2026-10-27
 - FIX: Liegt „Von“ nach „Bis“, erscheint der Hinweis „„Von“ liegt nach „Bis“ – bitte den Zeitraum korrigieren.“ statt einer kommentarlos leeren Tabelle (Live-Befund 27.10.2026).
 - FIX: Eine leere Messdatentabelle zeigt „Seite 1 von 1 · 0-0“ statt „1-0“.
